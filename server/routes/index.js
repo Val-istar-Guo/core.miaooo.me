@@ -1,12 +1,12 @@
 import Router from 'koa-router'
 import faviconRouter from './favicon'
-// import childRouter from './child'
+import apiRouter from './api'
 
 
 const router = new Router()
 
 router
   .use(faviconRouter.routes())
-  // .use(childRouter.routes())
+  .use(apiRouter.routes())
 
 export default router

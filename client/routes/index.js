@@ -1,16 +1,15 @@
-import Example from '../views/example'
-
 
 export default [
-  { path: '/', component: Example, alias: ['/home'], children: [
-    {
-      path: '',
-      alias: ['introduce'],
-      component: () => import('../views/introduce'),
-    },
-    {
-      path: 'test',
-      component: () => import('../views/test'),
-    },
-  ]},
+  {
+    path: 'domain',
+    component: () => import('../views/domain'),
+  },
+  {
+    path: 'service',
+    component: () => import('../views/service'),
+  },
+  {
+    path: 'certificate',
+    component: () => import('../views/service'),
+  },
 ]
