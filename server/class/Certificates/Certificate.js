@@ -12,7 +12,7 @@ class Certificate {
     throw new Error(`${this.name} 证书不支持创建`)
   }
 
-  renew() {
+  async renew() {
   }
 
   async fillNginxConfig(config) {
@@ -21,6 +21,10 @@ class Certificate {
       `ssl_certificate ${this.crt}`,
       `ssl_certificate_key ${this.key}`,
     )
+  }
+
+  async delete() {
+
   }
 }
 

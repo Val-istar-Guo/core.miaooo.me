@@ -1,5 +1,6 @@
 import fs from 'fs-extra'
 import childProcess from 'child_process'
+import { join } from 'path'
 import { promisify } from 'util'
 import Certificate from './Certificate'
 import { CERTIFICATE_DIR } from '../../constant'
@@ -7,34 +8,40 @@ import { CERTIFICATE_DIR } from '../../constant'
 
 const exec = promisify(childProcess.exec)
 const genRsa = async size => {
-  const { stdout, stderr } = await exec(`openssl genrsa ${size}`)
+  const { stdout } = await exec(`openssl genrsa ${size}`)
 
-  console.log('stdout:', stdout);
-  console.log('stderr:', stderr);
+  return stdout
 }
 
 const genAccountKey = async paths => {
-  await genRsa(4096)
+  const accountKey = await genRsa(4096)
+  await fs.writeFile(paths.ACCOUNT_KEY, accountKey)
 }
 
 const genDomainKey = async paths => {
-  await genRsa(4096)
+  const domainKey = await genRsa(4096)
+  await fs.writeFile(paths.DOMAIN_KEY, domainKey)
 }
 
 const getOpensslConfigFilePath = async () => {
   const { stdout, stderr } = await exec('openssl version -a | grep OPENSSLDIR')
 
-  console.log('stdout:', stdout);
-  console.log('stderr:', stderr);
+  if (stderr) throw new Error(stderr)
+
+  console.log(stdout)
+  const matched = stdout.match(/^OPENSSLDIR: "(.+)"/)
+  if (!matched) throw new Error('无法找到openssl的配置文件')
+  console.log('config file path => ', matched)
+
+  return matched[1]
 }
 
-const genCSR = async (path, domains) => {
+const genCSR = async (paths, domains) => {
   await getOpensslConfigFilePath()
   const subjectAltName = domains.map(domain => `DNS:${domain}`).join(',')
-  const { stdout, stderr } = await exec(`openssl req -new -sha256 -key domain.key -subj "/" -reqexts SAN -config <(cat /etc/ssl/openssl.cnf <(printf "[SAN]\nsubjectAltName=${subjectAltName}"))`)
+  const { stdout, stderr } = await exec(`openssl req -new -sha256 -key ${paths.DOMAIN_KEY} -subj "/" -reqexts SAN -config <(cat /etc/ssl/openssl.cnf <(printf "[SAN]\\nsubjectAltName=${subjectAltName}"))`, { shell: "/bin/bash" })
 
-  console.log('stdout:', stdout);
-  console.log('stderr:', stderr);
+  await fs.writeFile(paths.DOMAIN_CSR, stdout)
 }
 
 const genCRT = async (paths) => {
@@ -47,14 +54,13 @@ const genCRT = async (paths) => {
 
 
 
-export default class extends Certificate {
-  get caName () {
+class LetsEncrypt extends Certificate {
+  static get caName () {
     return "Let's Encrypt"
   }
 
   static async create({ name, domains }) {
     const ROOT = join(CERTIFICATE_DIR, name)
-    if (fs.pathExists(ROOT)) throw new Error(`${name} 证书已存在`)
 
     const paths = {
       CHALLENGES: join(ROOT, 'challenges'),
@@ -63,8 +69,9 @@ export default class extends Certificate {
       ACCOUNT_KEY: join(ROOT, 'account.key')
     }
 
-    await fs.ensureDir(paths.CHALLENGES_PATH)
+    await fs.ensureDir(paths.CHALLENGES)
     await genAccountKey(paths)
+    await genDomainKey(paths)
     await genCSR(paths, domains)
   }
 
@@ -88,7 +95,7 @@ export default class extends Certificate {
   async fillNginxConfig(config) {
     super.fillNginxConfig(config)
 
-    if (config[0][1].every(item => !/^listen 80$/.test(item))) throw new Error(`${Certificate.caName} 证书必须要启用 http`)
+    if (config[0][1].every(item => !/^listen 80$/.test(item))) throw new Error(`${LetsEncrypt.caName} 证书必须要启用 http`)
 
     const index = config[0][1].findIndex(item => item[0] && /^location/.test(item[0]))
 
@@ -101,3 +108,5 @@ export default class extends Certificate {
     ])
   }
 }
+
+export default LetsEncrypt
