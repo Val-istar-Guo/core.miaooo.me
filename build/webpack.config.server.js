@@ -32,7 +32,15 @@ export default {
     libraryTarget: 'commonjs2',
   },
 
+  module: {
+    rules: [
+      { test: /\.tsx?$/, loader: 'awesome-typescript-loader' },
+      { test: /\.js$/, loader: 'source-map-loader' },
+    ]
+  },
+
   resolve: {
     alias: { ...config.alias },
+    extensions: ['.js', '.ts'],
   },
 }

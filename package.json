@@ -16,7 +16,9 @@
     "deploy:prod": "pm2 deploy ./build/pm2.config.js prod",
     "analyzer": "NODE_ENV=production ANALYZER=true webpack",
     "ca": "git add -A && git-cz -av",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "release": "standard-version",
+    "release:first": "standard-version --first-release"
   },
   "engines": {
     "node": ">=10.13.0"
@@ -29,6 +31,8 @@
     "@babel/register": "^7.0.0",
     "@commitlint/cli": "^7.1.2",
     "@commitlint/config-conventional": "^7.1.2",
+    "@types/node": "^10.12.18",
+    "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.0.4",
     "commitizen": "^3.0.4",
     "copy-webpack-plugin": "^4.5.1",
@@ -44,7 +48,9 @@
     "postcss-loader": "^3.0.0",
     "postcss-preset-env": "^6.4.0",
     "require-from-string": "^2.0.1",
+    "source-map-loader": "^0.2.4",
     "source-map-support": "^0.5.4",
+    "typescript": "^3.2.2",
     "url-loader": "^1.0.1",
     "vue-loader": "^15.2.4",
     "vue-ssr-webpack-plugin": "^3.0.0",
@@ -54,7 +60,8 @@
     "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^3.0.3",
     "webpack-merge": "^4.1.2",
-    "webpack-node-externals": "^1.7.2"
+    "webpack-node-externals": "^1.7.2",
+    "standard-version": "^4.4.0"
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
@@ -73,6 +80,7 @@
     "sanitization": "^0.3.0",
     "superagent": "^3.8.2",
     "sw-toolbox": "^3.6.0",
+    "typeorm": "^0.2.9",
     "vue": "^2.5.16",
     "vue-router": "^3.0.1",
     "vue-server-renderer": "^2.5.16",

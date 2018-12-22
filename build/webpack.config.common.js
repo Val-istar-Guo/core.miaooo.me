@@ -11,6 +11,7 @@ import loadBuildConfig from './loadBuildConfig'
 
 
 import cssLoader from './loaders/css'
+import tsLoader from './loaders/ts'
 import jsLoader from './loaders/js'
 import fontLoader from './loaders/font'
 import htmlLoader from './loaders/html'
@@ -43,6 +44,7 @@ export default {
       //   }]
       // },
       vueLoader,
+      tsLoader,
       jsLoader,
       cssLoader,
       fontLoader,
@@ -53,7 +55,7 @@ export default {
 
   resolve: {
     alias: config.alias,
-    extensions: ['.js', '.vue'],
+    extensions: ['.js', '.vue', '.ts'],
   },
   plugins: [
     new VueLoaderPlugin(),
