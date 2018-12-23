@@ -1,7 +1,7 @@
 importScripts('/sw-toolbox.js')
 
 
-toolbox.precache(['/', '/introduce', '/test', '/manifest.json'])
+toolbox.precache(['/', '/manifest.json'])
 
 toolbox.router.get('/', toolbox.networkFirst)
 toolbox.router.get('/introduce', toolbox.networkFirst)

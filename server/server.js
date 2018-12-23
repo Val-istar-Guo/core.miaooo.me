@@ -5,7 +5,7 @@ import logger from 'koa-logger'
 // middleware config
 import * as config from './config'
 import router from './routes'
-import './init'
+// import './init'
 
 
 const server = new Koa()

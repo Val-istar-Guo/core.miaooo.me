@@ -5,7 +5,7 @@ import { ROOT_DIR, CERTIFICATE_DIR, APPLICATION_DIR } from './constant'
 // OPTIMIZE: check python and openssl is installed
 
 if (!fs.existsSync(ROOT_DIR)) {
-  throw new Error(`配置的nginx文件夹路径不存在：${NGINX_FOLDER}`)
+  throw new Error(`配置的nginx文件夹路径不存在：${ROOT_DIR}`)
 }
 
 fs.ensureDir(CERTIFICATE_DIR)
