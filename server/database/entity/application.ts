@@ -1,4 +1,4 @@
-import { Entity, JoinColumn, Column, OneToOne, PrimaryColumn } from "typeorm";
+import { Entity, JoinColumn, Column, OneToOne, PrimaryColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import Service from './service'
 import Proxy from './proxy'
 
@@ -10,8 +10,11 @@ class Application {
   @Column()
   name!: string
 
-  @Column('datetime')
+  @CreateDateColumn()
   createTime!: string
+
+  @UpdateDateColumn()
+  updateTime!: string
 
   // @Column()
   // lastModifyUser!: string
