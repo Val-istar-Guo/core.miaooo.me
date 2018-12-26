@@ -1,12 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, OneToOne, Column, ManyToOne } from 'typeorm'
+import { Entity, OneToOne, Column, ManyToOne, PrimaryColumn } from 'typeorm'
 import Application from './application'
 import Certificate from './certificate'
 
 
 @Entity()
 class Proxy {
-  @PrimaryGeneratedColumn()
-  id!: number
+  @PrimaryColumn()
+  key!: number
 
   @Column('simple-array')
   domains!: string[]

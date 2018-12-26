@@ -82,6 +82,7 @@
     "sqlite3": "^4.0.4",
     "superagent": "^3.8.2",
     "sw-toolbox": "^3.6.0",
+    "ts-custom-error": "^2.2.1",
     "typeorm": "^0.2.9",
     "vue": "^2.5.16",
     "vue-router": "^3.0.1",

@@ -1,7 +1,7 @@
 import 'reflect-metadata'
-import { createConnection, ConnectionOptions } from "typeorm";
+import { ConnectionOptions } from "typeorm";
 
-import { DATABASE } from '../constant'
+import { DATABASE } from '../constant/paths'
 import { Application, Service, Proxy, Certificate } from './entity'
 
 

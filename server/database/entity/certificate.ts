@@ -7,13 +7,19 @@ const enum CA { LetsEncrypt = 'LetsEncrypt' }
 @Entity()
 class Certificate {
   @PrimaryColumn()
+  key!: string
+
+  @Column()
   name!: string
+
+  @Column('simple-array')
+  domains!: string[]
 
   @Column()
   ca!: CA
 
   @Column()
-  key!: string
+  crtKey!: string
 
   @Column()
   crt!: string
