@@ -1,10 +1,10 @@
 import { getRepository } from 'typeorm'
-import { Application } from '../database/entity'
+import { Application } from '../entity'
 import ServerError from '../class/ServerError'
-import ErrorMessage from '../constant/errorMessage'
+import { ErrorMessage } from '../constant'
 
 
-/** 校验应用key值 */
+/** 校验应用key值，自定义部分不能包含下划线，因为用于区分proxy.id与appkey */
 const validateKey = (key: string): Boolean => /^application\.(website)(\.[a-zA-Z-]+)+$/.test(key)
 
 
@@ -17,10 +17,10 @@ export const getList = async (): Promise<Application[]> => {
 
 /** 新建应用 */
 export const create = async (options): Promise<Application> => {
-  const { key, name, proxy, service } = options
+  const { key, name, nginxProxy, services } = options
 
   if (!validateKey(key)) throw new ServerError(400, ErrorMessage.illegalKey)
-  // BUG: proxy exist
+  // BUG: nginxProxy exist
   // BUG: service exist
 
   const applicationRepository = getRepository(Application)
@@ -28,8 +28,8 @@ export const create = async (options): Promise<Application> => {
   const application = new Application()
   application.key = key
   application.name = name
-  application.proxy = proxy
-  application.service = service
+  application.nginxProxy = nginxProxy
+  application.services = services
 
   if (applicationRepository.hasId(application)) throw new ServerError(400, ErrorMessage.createExistApplication)
   await applicationRepository.save(application)
@@ -61,16 +61,16 @@ export const remove = async (key: string): Promise<void> => {
 
 /** 更新信息 */
 export const update = async (key: string, options): Promise<Application> => {
-  const { name, service, proxy } = options
   if (!validateKey(key)) throw new ServerError(400, ErrorMessage.illegalKey)
+  const { name, services, nginxProxy } = options
 
   const applicationRepository = getRepository(Application)
   const application = await applicationRepository.findOne(key)
   if (!application) throw new ServerError(404, ErrorMessage.noApplication)
 
-  application.name = name
-  application.proxy = proxy
-  application.service = service
+  if (name) application.name = name
+  if (nginxProxy) application.nginxProxy = nginxProxy
+  if (application) application.services = services
 
   await applicationRepository.save(application)
   return application

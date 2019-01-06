@@ -1,42 +1,71 @@
 import { getRepository } from 'typeorm'
-import { Certificate } from '../database/entity'
+import { Certificate } from '../entity'
 import ServerError from '../class/ServerError'
-import ErrorMessage from '../constant/errorMessage'
+import { ErrorMessage } from '../constant'
 
 
-/** 校验应用key值 */
-const validateKey = (key: string): Boolean => /^certificate\.(letsencrypt)(\.[a-zA-Z-]+)+$/.test(key)
+const validateId = id => typeof id === 'number' && id > 0;
 
-
+/** 获取证书列表 */
 export const getList = async (): Promise<Certificate[]> => {
   const repository = getRepository(Certificate)
   return await repository.find()
 }
 
-export const getInfo = async (key: string): Promise<Certificate> => {
-  if (validateKey(key)) throw new ServerError(400, ErrorMessage.illegalKey)
+/** 获取证书信息 */
+export const getInfo = async (id: string): Promise<Certificate> => {
+  if (validateId(id)) throw new ServerError(400, ErrorMessage.illegalId)
 
   const repository = getRepository(Certificate)
-  const certificate = await repository.findOne(key)
+  const certificate = await repository.findOne(id)
 
   if (!certificate) throw new ServerError(404, ErrorMessage.noCertificate)
   return certificate
 }
 
+/** 创建证书 */
 export const create = async (options): Promise<Certificate> => {
-  const { key, name, domains, ca, crtKey, crt } = options
-  if (validateKey(key)) throw new ServerError(400, ErrorMessage.illegalKey)
+  const { name, domains, ca, crtKey, crt } = options
 
   const repository = getRepository(Certificate)
   const certificate = new Certificate()
-  certificate.key = key
   certificate.name = name
   certificate.domains = domains
   certificate.ca = ca
   certificate.crtKey = crtKey
   certificate.crt = crt
 
-  if (repository.hasId(certificate)) throw new ServerError(400, ErrorMessage.createExistCertificate)
   await repository.save(certificate)
   return certificate
 }
+
+/** 更新证书 */
+export const update = async (id: string, options): Promise<Certificate> => {
+  if (!validateId(id)) throw new ServerError(400, ErrorMessage.illegalId)
+  const { name, domains, ca, crtKey } = options;
+
+  const repository = getRepository(Certificate)
+  const certificate = await repository.findOne(id)
+  if (!certificate) throw new ServerError(404, ErrorMessage.noCertificate)
+
+  if (name) certificate.name = name
+  if (domains) certificate.domains = domains
+  if (ca) certificate.ca = ca
+  if (crtKey) certificate.crtKey = crtKey
+
+  await repository.save(certificate)
+
+  return certificate
+}
+
+/** 删除证书 */
+export const remove = async (id: string): Promise<void> => {
+  if (!validateId(id)) throw new ServerError(400, ErrorMessage.illegalId)
+
+  const repository = getRepository(Certificate)
+  const certificate = await repository.findOne(id)
+  if (!certificate) throw new ServerError(404, ErrorMessage.noCertificate)
+
+  await repository.delete(id)
+}
+
