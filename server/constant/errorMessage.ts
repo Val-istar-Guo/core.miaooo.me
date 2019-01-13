@@ -17,7 +17,7 @@ export default {
   noCertificate: <Message> '证书不存在',
   noNginxProxy: <Message> 'nginx代理不存在',
   noService: <Message> '服务不存在',
-  onMechine: <Message> '机器不存在',
+  noMechine: <Message> '机器不存在',
 
   unableCreateLetsEncrypt,
   caNotSupportCreateCertificate: <Message> '目前暂不支持创建此ca证书',
