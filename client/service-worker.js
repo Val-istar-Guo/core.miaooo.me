@@ -1,11 +1,9 @@
 importScripts('/sw-toolbox.js')
 
 
-toolbox.precache(['/', '/manifest.json'])
+toolbox.precache(['/manifest.json'])
 
 toolbox.router.get('/', toolbox.networkFirst)
-toolbox.router.get('/introduce', toolbox.networkFirst)
-toolbox.router.get('/test', toolbox.networkFirst)
 
 toolbox.router.get('/manifest.json', toolbox.cacheFirst)
 toolbox.router.get('/runtime.*.js', toolbox.cacheFirst)

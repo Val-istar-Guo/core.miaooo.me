@@ -1,15 +1,19 @@
 
 export default [
   {
-    path: '/domain',
-    component: () => import('../views/domain'),
+    path: '/applications',
+    component: () => import('../views/applications'),
   },
   {
-    path: '/service',
-    component: () => import('../views/service'),
+    path: '/domains',
+    component: () => import('../views/domains'),
   },
   {
-    path: '/certificate',
-    component: () => import('../views/service'),
+    path: '/services',
+    component: () => import('../views/services'),
+  },
+  {
+    path: '/certificates',
+    component: () => import('../views/services'),
   },
 ]

@@ -1,15 +1,46 @@
 <template>
-  <header>
-    <h1>{{title}}</h1>
-  </header>
+  <div class="navigation">
+    <nav>
+      <router-link class="link" to="/applications">应用</router-link>
+      <router-link class="link" to="/domains">域名</router-link>
+      <router-link class="link" to="/certificates">证书</router-link>
+      <router-link class="link" to="/mechines">机器</router-link>
+    </nav>
+    <div class="operators">
+      <slot></slot>
+    </div>
+  </div>
 </template>
 <script>
 export default {
-  props: {
-    title: String,
-  }
 }
 </script>
 <style lang="postcss" scoped>
+.navigation {
+  background: #333;
+  display: flex;
+  justify-content: space-between;
+  color: #fff;
+
+  & nav {
+    & .link {
+      color: #fff;
+      text-decoration: none;
+      padding: 30px 30px;
+      display: inline-block;
+      &.active {
+        color: #fff;
+        background: #666;
+      }
+    }
+  }
+
+  & .operators {
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+  }
+}
+
 
 </style>

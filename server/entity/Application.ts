@@ -26,7 +26,6 @@ class Application {
   mechines!: Mechine[]
 
   @OneToMany(() => Service, 'application')
-  @JoinColumn()
   services!: Service[]
 
   @OneToOne(() => NginxProxy, 'application')

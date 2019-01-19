@@ -10,8 +10,8 @@ const validateKey = (key: string): Boolean => /^application\.(website)(\.[a-zA-Z
 
 /** 获取全部配置的列表 */
 export const getList = async (): Promise<Application[]> => {
-  const applicationRepository = getRepository(Application)
-  return await applicationRepository.find()
+  const repository = getRepository(Application)
+  return await repository.find()
 }
 
 
@@ -23,7 +23,8 @@ export const create = async (options): Promise<Application> => {
   // BUG: nginxProxy exist
   // BUG: service exist
 
-  const applicationRepository = getRepository(Application)
+  const repository = getRepository(Application)
+  if (await repository.findOne(key)) throw new ServerError(400, ErrorMessage.createExistApplication)
 
   const application = new Application()
   application.key = key
@@ -31,8 +32,7 @@ export const create = async (options): Promise<Application> => {
   application.nginxProxy = nginxProxy
   application.services = services
 
-  if (applicationRepository.hasId(application)) throw new ServerError(400, ErrorMessage.createExistApplication)
-  await applicationRepository.save(application)
+  await repository.save(application)
   return application
 }
 
@@ -41,8 +41,8 @@ export const create = async (options): Promise<Application> => {
 export const getInfo = async (key: string): Promise<Application> => {
   if (!validateKey(key)) throw new ServerError(400, ErrorMessage.illegalKey)
 
-  const applicationRepository = getRepository(Application)
-  const application = await applicationRepository.findOne(key)
+  const repository = getRepository(Application)
+  const application = await repository.findOne(key)
 
   if (!application) throw new ServerError(404, ErrorMessage.noApplication)
   return application
@@ -52,11 +52,11 @@ export const getInfo = async (key: string): Promise<Application> => {
 export const remove = async (key: string): Promise<void> => {
   if (!validateKey(key)) throw new ServerError(400, ErrorMessage.illegalKey)
 
-  const applicationRepository = getRepository(Application)
-  const application = await applicationRepository.findOne(key)
+  const repository = getRepository(Application)
+  const application = await repository.findOne(key)
   if (!application) throw new ServerError(404, ErrorMessage.noApplication)
 
-  await applicationRepository.delete(key)
+  await repository.delete(key)
 }
 
 /** 更新信息 */
@@ -64,15 +64,15 @@ export const update = async (key: string, options): Promise<Application> => {
   if (!validateKey(key)) throw new ServerError(400, ErrorMessage.illegalKey)
   const { name, services, nginxProxy } = options
 
-  const applicationRepository = getRepository(Application)
-  const application = await applicationRepository.findOne(key)
+  const repository = getRepository(Application)
+  const application = await repository.findOne(key)
   if (!application) throw new ServerError(404, ErrorMessage.noApplication)
 
   if (name) application.name = name
   if (nginxProxy) application.nginxProxy = nginxProxy
   if (application) application.services = services
 
-  await applicationRepository.save(application)
+  await repository.save(application)
   return application
 }
 
