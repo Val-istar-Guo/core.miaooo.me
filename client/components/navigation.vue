@@ -39,6 +39,15 @@ export default {
     margin-right: 20px;
     display: flex;
     align-items: center;
+
+    & .button {
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid #fff;
+      border-radius: 4px;
+      padding: 10px 20px;
+      text-align: center;
+    }
   }
 }
 

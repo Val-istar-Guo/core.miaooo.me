@@ -5,6 +5,10 @@ export default [
     component: () => import('../views/applications'),
   },
   {
+    path: '/applications/:key',
+    component: () => import('../views/application'),
+  },
+  {
     path: '/domains',
     component: () => import('../views/domains'),
   },

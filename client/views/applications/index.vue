@@ -1,7 +1,7 @@
 <template>
   <div>
     <navigation>
-      <div class="add" @click="showCreator">创建应用</div>
+      <div class="button add" @click="showCreator">创建应用</div>
     </navigation>
 
     <creator :show="isShowCreator" @created="refresh" @cancle="hideCreator" />
@@ -12,7 +12,7 @@
           <span class="name">{{application.name}}</span>
           <span class="key">{{application.key}}</span>
         </div>
-        <button class="detail-button">查看</button>
+        <router-link class="detail-button" :to="`/applications/${application.key}`">查看</router-link>
       </li>
     </ul>
   </div>
@@ -58,15 +58,6 @@ export default {
 }
 </script>
 <style lang="postcss" scoped>
-.add {
-  font-size: 14px;
-  cursor: pointer;
-  border: 1px solid #fff;
-  border-radius: 4px;
-  padding: 10px 20px;
-  text-align: center;
-}
-
 .application-list {
   width: 1000px;
   margin: 60px auto;
@@ -110,6 +101,7 @@ export default {
     background: transparent;
     padding: 0 10px;
     cursor: pointer;
+    text-decoration: none;
   }
 }
 </style>
