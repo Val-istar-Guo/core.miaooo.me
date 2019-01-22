@@ -16,6 +16,7 @@ yarn-error.log
 # Compile
 dist
 views/index.*.html
+/database
 
 # Lock
 yarn.lock
