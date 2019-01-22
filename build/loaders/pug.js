@@ -1,3 +1,4 @@
+// mili upgrade type: cover
 export default {
   test: /\.pug$/,
   oneOf: [
