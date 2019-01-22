@@ -24,4 +24,5 @@ export default {
   caNotSupport: <Message> '该ca目前尚不支持',
 
   needEnableNginxHttpBeforeCreateLetsEncrypt: <Message> '创建LetsEncrypt证书，需要nginx代理启用http',
+  portMechineNeedPort: <Message> '端口机必须要指定端口',
 }

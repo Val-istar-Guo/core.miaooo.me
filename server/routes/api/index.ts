@@ -8,6 +8,7 @@ import applicationRouter from './applications'
 import serviceRouter from './services'
 import nginxProxiesRouter from './nginx-proxies'
 import caRouter from './ca'
+import mechineRouter from './mechine'
 
 
 const router = new Router()
@@ -23,5 +24,6 @@ router
   .use(serviceRouter.routes())
   .use(caRouter.routes())
   .use(nginxProxiesRouter.routes())
+  .use(mechineRouter.routes())
 
 export default router

@@ -20,4 +20,8 @@ export default [
     path: '/certificates',
     component: () => import('../views/services'),
   },
+  {
+    path: '/mechines',
+    component: () => import('../views/mechines'),
+  },
 ]

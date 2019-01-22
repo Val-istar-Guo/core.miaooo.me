@@ -1,6 +1,5 @@
 <template>
   <div>
-    <navigation title="服务" />
   </div>
 </template>
 <script>

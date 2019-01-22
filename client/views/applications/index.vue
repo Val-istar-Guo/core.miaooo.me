@@ -1,29 +1,44 @@
 <template>
   <div>
-    <navigation>
-      <div class="button add" @click="showCreator">创建应用</div>
-    </navigation>
+    <creator :show="isShowCreator" @cancle="hideCreator" @created="refresh" />
+    <v-layout>
+      <v-flex xs12 sm8 offset-sm2>
+        <v-card>
+          <v-btn
+            grow
+            flat
+            block
+            large
+            color="blue-grey darken-4"
+            class="mt-0 mb-0"
+            @click="showCreator"
+          >
+            <v-icon >add</v-icon>
+          </v-btn>
 
-    <creator :show="isShowCreator" @created="refresh" @cancle="hideCreator" />
+          <v-divider v-if="applications.length" />
 
-    <ul class="application-list">
-      <li class="application" v-for="application of applications" :key="application.key">
-        <div class="info">
-          <span class="name">{{application.name}}</span>
-          <span class="key">{{application.key}}</span>
-        </div>
-        <router-link class="detail-button" :to="`/applications/${application.key}`">查看</router-link>
-      </li>
-    </ul>
+          <item
+            v-for="(application, index) of applications"
+            :key="application.key"
+            :name="application.name"
+            :app-key="application.key"
+            :divider="index + 1 < applications.length"
+            :index="index"
+          />
+        </v-card>
+      </v-flex>
+    </v-layout>
   </div>
 </template>
 <script>
 import request from 'framework/request';
-import creator from './creator'
+import creator from './creator.vue'
+import item from './item'
 
 
 export default {
-  components: { creator },
+  components: { creator, item },
   data() {
     return {
       isShowCreator: false,

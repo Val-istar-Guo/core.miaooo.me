@@ -1,22 +1,41 @@
 <template>
-  <div v-if="show" class="creator">
-    <div class="mask" @click="$emit('cancle')" />
+  <v-dialog persistent :value="show" width="500">
+    <v-card>
+      <v-card-title
+        class="headline lighten-2"
+        primary-title
+      >
+        创建应用
+      </v-card-title>
 
-    <div class="form">
-      <div>
-        <input type="text" v-model="key" placeholder="appkey" />
-        <span v-if="!verification.key.pass">{{verification.key.message}}</span>
-      </div>
+      <v-card-text>
+        <v-form v-model="valid" ref="form" lazy-validation>
+          <v-container>
+            <v-text-field
+              label="名称"
+              v-model="name"
+              :rules="[rules.required, rules.noIllegalChars]"
+            />
+            <v-text-field
+              label="appKey"
+              v-model="key"
+              :rules="[rules.required, rules.key]"
+            />
+          </v-container>
+        </v-form>
+      </v-card-text>
 
-      <div>
-        <input type="text" v-model="name" placeholder="name" />
-        <span v-if="!verification.name.pass">{{verification.name.message}}</span>
-      </div>
+      <!-- <v-divider></v-divider> -->
 
-      <button @click="create">确认</button>
-    </div>
-
-  </div>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <div class="pb-2 pr-2">
+          <v-btn color="success" @click="create" :disabled="!valid">创建</v-btn>
+          <v-btn color="error" @click="$emit('cancle')">取消</v-btn>
+        </div>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 <script>
 import request from 'framework/request';
@@ -29,41 +48,27 @@ export default {
 
   data() {
     return {
-      key: '',
+      valid: true,
+
+      key: 'application.website.',
       name: '',
 
       verification: {
         key: { pass: true, message: '' },
         name: { pass: true, message: '' },
       },
+
+       rules: {
+        required: value => !!value || '必填',
+        key: value => /^application\.(website)(\.[a-zA-Z-]+)+$/.test(value) || '格式需符合application.website.xxx',
+        noIllegalChars: value => !/[!@#\$%\^&*_\-+=\|\\]/.test(value) || '包含非法字符',
+      },
     }
   },
 
   methods: {
-    async validate() {
-      let valid = true
-
-      if (!this.key.length) {
-        this.verification.key = { pass: false, message: '请填写appkey' }
-        valid = false
-      } else if (!/^application\.(website)(\.[a-zA-Z-]+)+$/.test(this.key)) {
-        this.verification.key = { pass: false, message: 'appkey格式错误' }
-        valid = false
-      }
-
-      if (!this.name.length) {
-        this.verification.name = { pass: false, message: '请填写名称' }
-        valid = false
-      } else if (/[!@#\$%\^&*_\-+=\|\\]/.test(this.name)) {
-        this.verification.name = { pass: false, message: '名称格式错误' }
-        valid = false
-      }
-
-      return valid
-    },
-
     async create() {
-      if (!await this.validate()) return
+      if (!this.$refs.form.validate()) return;
 
       try {
         const application = await request

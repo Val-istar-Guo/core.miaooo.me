@@ -5,6 +5,7 @@ import Vue from 'vue'
 import App from './app'
 import createRouter from './createRouter'
 import createStore from './createStore'
+import './app-plugins'
 
 
 export default function () {

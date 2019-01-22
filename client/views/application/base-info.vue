@@ -1,9 +1,31 @@
 <template>
-  <div class="base-info">
-    <div class="name">{{name}}</div>
-    <div class="key">appkey: {{appKey}}</div>
-    <div class="create-time">创建时间: {{format(createTime)}}</div>
-    <div class="update-time">更新时间：{{format(updateTime)}}</div>
+  <div>
+    <div class="unable-select  body-1 grey--text text--darken-2 mb-3">
+      基本信息
+    </div>
+    <v-card>
+      <v-card-title primary-title>
+        <div>
+          <h3 class="headline md-0">{{name}}</h3>
+          <div>
+            <div class="body-2 grey--text font-weight-bold">{{appKey}}</div>
+          </div>
+          <div class="mt-3 font-weight-light body-1">
+            <div>创建于：{{format(createTime)}}</div>
+            <div>修改于：{{format(updateTime)}}</div>
+          </div>
+        </div>
+      </v-card-title>
+
+      <v-divider />
+
+      <v-card-actions>
+        <v-layout justify-end>
+          <v-btn flat color="blue-grey darken-4">修改</v-btn>
+          <v-btn flat color="error">删除</v-btn>
+        </v-layout>
+      </v-card-actions>
+    </v-card>
   </div>
 </template>
 <script>
@@ -27,19 +49,5 @@ export default {
 }
 </script>
 <style lang="postcss" scoped>
-.base-info {
-  margin-bottom: 30px;
-}
 
-.name {
-  font-size: 28px;
-  margin-bottom: 20px;
-}
-
-.key,
-.create-time,
-.update-time {
-  font-size: 16px;
-  margin: 5px 0;
-}
 </style>

@@ -1,6 +1,5 @@
 <template>
   <div>
-    <navigation title="域" />
   </div>
 </template>
 <script>

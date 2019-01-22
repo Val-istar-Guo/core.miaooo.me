@@ -13,16 +13,16 @@ const addMechineUrl = host => app => ({
 })
 
 router
-  .prefix('/mechine')
+  .prefix('/mechines')
 
   .get('/', async ctx => {
     const list = await getList()
 
-    ctx.body = list.map(addMechineUrl)
+    ctx.body = list.map(addMechineUrl(ctx.host))
   })
 
   .get('/:id', async ctx => {
-    ctx.body = await getInfo(ctx.params.id)
+    ctx.body = await getInfo(parseInt(ctx.params.id))
   })
 
   .post('/', async ctx => {
@@ -33,11 +33,13 @@ router
     const { id } = ctx.request.body
     if (id && id !== ctx.params.id) throw new ServerError(400, ErrorMessage.unableChangeId)
 
-    const mechine = await update(ctx.params.id, ctx.request.body)
+    const mechine = await update(parseInt(ctx.params.id), ctx.request.body)
     ctx.body = mechine
   })
 
   .delete('/:id', async ctx => {
-    await remove(ctx.params.id)
+    await remove(parseInt(ctx.params.id))
     ctx.status = 200
   })
+
+export default router

@@ -2,7 +2,13 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 import Application from './Application'
 
 
-export const enum CommunicationTypes { uWSGI = 'uwsgi', proxy = 'proxy' }
+export const enum CommunicationTypes { proxy = 'proxy' }
+export const enum MechineType {
+  // 端口机
+  port = 'port',
+  // 独立主机
+  host = 'host'
+}
 
 @Entity()
 class Mechine {
@@ -10,13 +16,22 @@ class Mechine {
   id!: number
 
   @Column()
-  name!: string
+  type!: MechineType
 
   @Column()
-  address!: string
+  country!: string
 
   @Column()
-  host!: string
+  region!: string
+
+  @Column()
+  publicIp!: string
+
+  @Column({ nullable: true })
+  privateIp!: string
+
+  @Column({ nullable: true })
+  port!: number
 
   @Column()
   communication!: CommunicationTypes

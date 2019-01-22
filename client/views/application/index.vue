@@ -1,28 +1,24 @@
 <template>
-  <div>
-    <navigation>
-      <div class="button delete" @click="deleteApplication">删除应用</div>
-    </navigation>
-    <div class="content">
+  <v-layout col>
+    <v-flex sm8 offset-sm2>
       <base-info
         :app-key="$route.params.key"
         :name="name"
         :create-time="createTime"
         :update-time="updateTime"
       />
-      <button>申请机器</button>
-      <button>启动nginx服务</button>
-      <button>启动https服务</button>
-    </div>
-  </div>
+      <mechines />
+    </v-flex>
+  </v-layout>
 </template>
 <script>
 import request from 'framework/request'
 import baseInfo from './base-info'
+import mechines from './mechines'
 
 
 export default {
-  components: { baseInfo },
+  components: { baseInfo, mechines },
   data() {
     return {
       name: '',

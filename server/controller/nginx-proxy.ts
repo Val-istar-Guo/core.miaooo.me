@@ -62,7 +62,7 @@ const genNginxSSL = (proxy: NginxProxy): NginxSSLConfig => {
 const genNginxUpstream = (proxy: NginxProxy): NginxUpstreamConfig => {
   const servers = proxy.application.mechines
     .filter(mechine => !mechine.disabled)
-    .map(mechine => ({ host: mechine.host }))
+    .map(mechine => ({ host: `${mechine.publicIp}:${mechine.port}` }))
 
   const config: NginxUpstreamConfig = {
     name: `${proxy.application.key}_${proxy.id}`,
