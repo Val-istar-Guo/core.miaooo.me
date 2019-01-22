@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <document-title>应用管理平台</document-title>
     <v-toolbar color="blue-grey darken-4" dark>
       <v-toolbar-title class="unable-select">应用管理平台</v-toolbar-title>
 

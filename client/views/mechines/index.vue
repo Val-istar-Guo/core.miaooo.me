@@ -1,5 +1,6 @@
 <template>
   <div>
+    <document-title>机器管理</document-title>
     <creator :show="isShowCreator" @cancle="hideCreator" @created="refreshMechines" />
     <v-layout>
       <v-flex xs12 sm8 offset-sm2>

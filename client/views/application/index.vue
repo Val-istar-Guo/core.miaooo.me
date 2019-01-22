@@ -1,15 +1,18 @@
 <template>
-  <v-layout col>
-    <v-flex sm8 offset-sm2>
-      <base-info
-        :app-key="$route.params.key"
-        :name="name"
-        :create-time="createTime"
-        :update-time="updateTime"
-      />
-      <mechines />
-    </v-flex>
-  </v-layout>
+  <div>
+    <document-title>应用详情</document-title>
+    <v-layout col>
+      <v-flex sm8 offset-sm2>
+        <base-info
+          :app-key="$route.params.key"
+          :name="name"
+          :create-time="createTime"
+          :update-time="updateTime"
+        />
+        <mechines />
+      </v-flex>
+    </v-layout>
+  </div>
 </template>
 <script>
 import request from 'framework/request'
