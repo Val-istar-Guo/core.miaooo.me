@@ -4,3 +4,11 @@
 .unable-select {
   user-select: none;
 }
+
+.flex-0 {
+  flex: 0 !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

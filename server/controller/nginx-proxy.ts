@@ -87,6 +87,7 @@ const genNginxConfig = (proxy: NginxProxy): NginxConfig => {
 
     if (proxy.redirectHttps) {
       // 重定向Https
+      console.log('aaaaaaaaaaaaaaaaa')
       const location = genRedirectHttpsLocation()
       config.http.location.push(location)
     } else if (config.upstream) {
@@ -141,7 +142,7 @@ export const getInfo = async (id: number): Promise<NginxProxy> => {
 /** 创建nginx代理 */
 export const create = async (options): Promise<NginxProxy> => {
   const {
-    id, domains, enableHttp, enableHttps, application, certificate,
+    id, domains, enableHttp, enableHttps, application, certificate, redirectHttps,
     sslCiphers, sslPreferServerCiphers, sslProtocols, sslSessionCache,
     sslSessionTimeout, sslStapling,
   } = options
@@ -149,17 +150,18 @@ export const create = async (options): Promise<NginxProxy> => {
 
   const repository = getRepository(NginxProxy)
   const nginxProxy = new NginxProxy()
-  nginxProxy.domains = domains
-  nginxProxy.enableHttp = enableHttp
-  nginxProxy.enableHttps = enableHttps
-  nginxProxy.application = application
-  nginxProxy.certificate = certificate
-  nginxProxy.sslCiphers = sslCiphers
-  nginxProxy.sslPreferServerCiphers = sslPreferServerCiphers
-  nginxProxy.sslProtocols = sslProtocols
-  nginxProxy.sslSessionCache = sslSessionCache
-  nginxProxy.sslSessionTimeout = sslSessionTimeout
-  nginxProxy.sslStapling = sslStapling
+  if (domains) nginxProxy.domains = domains
+  if (typeof enableHttp === 'boolean') nginxProxy.enableHttp = enableHttp
+  if (typeof enableHttps === 'boolean') nginxProxy.enableHttps = enableHttps
+  if (typeof redirectHttps === 'boolean') nginxProxy.redirectHttps = redirectHttps
+  if (application) nginxProxy.application = application
+  if (certificate) nginxProxy.certificate = certificate
+  if (sslCiphers) nginxProxy.sslCiphers = sslCiphers
+  if (typeof sslPreferServerCiphers === 'boolean') nginxProxy.sslPreferServerCiphers = sslPreferServerCiphers
+  if (sslProtocols) nginxProxy.sslProtocols = sslProtocols
+  if (sslSessionCache) nginxProxy.sslSessionCache = sslSessionCache
+  if (sslSessionTimeout) nginxProxy.sslSessionTimeout = sslSessionTimeout
+  if (typeof sslStapling === 'boolean') nginxProxy.sslStapling = sslStapling
 
   await repository.save(nginxProxy)
   await apply(nginxProxy)
@@ -170,22 +172,34 @@ export const create = async (options): Promise<NginxProxy> => {
 export const update = async (id: number, options): Promise<NginxProxy> => {
   if (validateId(id)) throw new ServerError(400, ErrorMessage.illegalId)
 
-  const { domains, enableHttp, enableHttps, application, certificate } = options
+  const {
+    domains, enableHttp, enableHttps, application, certificate, redirectHttps,
+    sslCiphers, sslPreferServerCiphers, sslProtocols, sslSessionCache,
+    sslSessionTimeout, sslStapling,
+  } = options
+
   const repository = getRepository(NginxProxy)
 
   const nginxProxy = await repository.findOne(id)
   if (!nginxProxy) throw new ServerError(404, ErrorMessage.noNginxProxy)
 
   if (domains) nginxProxy.domains = domains
-  if (enableHttp) nginxProxy.enableHttp = enableHttp
-  if (enableHttps) nginxProxy.enableHttps = enableHttps
+  if (typeof enableHttp === 'boolean') nginxProxy.enableHttp = enableHttp
+  if (typeof enableHttps === 'boolean') nginxProxy.enableHttps = enableHttps
+  if (typeof redirectHttps === 'boolean') nginxProxy.redirectHttps = redirectHttps
   if (application) nginxProxy.application = application
   if (certificate) nginxProxy.certificate = certificate
+  if (sslCiphers) nginxProxy.sslCiphers = sslCiphers
+  if (typeof sslPreferServerCiphers === 'boolean') nginxProxy.sslPreferServerCiphers = sslPreferServerCiphers
+  if (sslProtocols) nginxProxy.sslProtocols = sslProtocols
+  if (sslSessionCache) nginxProxy.sslSessionCache = sslSessionCache
+  if (sslSessionTimeout) nginxProxy.sslSessionTimeout = sslSessionTimeout
+  if (typeof sslStapling === 'boolean') nginxProxy.sslStapling = sslStapling
 
-  const a = await repository.save(nginxProxy)
-  console.log('a => ', a)
-  await apply(nginxProxy)
-  return nginxProxy
+  const np = await repository.save(nginxProxy)
+  console.log(np)
+  await apply(np)
+  return np
 }
 
 /** 删除nginx代理 */

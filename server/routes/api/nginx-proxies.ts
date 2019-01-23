@@ -9,11 +9,11 @@ const router = new Router()
 
 const addProxyUrl = host => proxy => ({
   ...proxy,
-  url: encodeURI(join(host, `/api/proxies/${proxy.id}`))
+  url: encodeURI(join(host, `/api/nginx-proxies/${proxy.id}`))
 })
 
 router
-  .prefix('/proxies')
+  .prefix('/nginx-proxies')
 
   .get('/', async ctx => {
     const list = await getList()

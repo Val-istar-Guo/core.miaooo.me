@@ -9,7 +9,8 @@ const databaseOptions: ConnectionOptions = {
   database: DATABASE,
   entities: [Application, Service, NginxProxy, Certificate, Mechine],
   logging: true,
-  synchronize: true,
+  // synchronize: true,
+  // dropSchema: true,
 }
 
 export default databaseOptions

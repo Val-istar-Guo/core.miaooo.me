@@ -7,13 +7,13 @@ import { NginxHttpConfig, NginxHttpsConfig, NginxConfig } from './types'
 const serverNameStringify = (names?: string[]): string => {
   if (!names || !names.length) return ''
 
-  return `server_name: ${names.join(' ')}`
+  return `server_name: ${names.join(' ')};`
 }
 
 const httpStringify = (config: NginxHttpConfig): string => `
 server {
   listen 80;
-  ${serverNameStringify(config.serviceName)};
+  ${serverNameStringify(config.serviceName)}
   ${locationStringify(config.location)}
 }
 `

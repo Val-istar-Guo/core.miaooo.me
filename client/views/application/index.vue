@@ -8,8 +8,18 @@
           :name="name"
           :create-time="createTime"
           :update-time="updateTime"
+          :enable-nginx-proxy="!!nginxProxy"
         />
-        <mechines />
+
+        <mechines
+          :mechines="mechines"
+        />
+
+        <nginx
+          v-if="!!nginxProxy"
+          :nginx-proxy="nginxProxy"
+          @updated="fetchInfo"
+        />
       </v-flex>
     </v-layout>
   </div>
@@ -18,15 +28,18 @@
 import request from 'framework/request'
 import baseInfo from './base-info'
 import mechines from './mechines'
+import nginx from './nginx'
 
 
 export default {
-  components: { baseInfo, mechines },
+  components: { baseInfo, mechines, nginx },
   data() {
     return {
       name: '',
       createTime: '',
       updateTime: '',
+      nginxProxy: null,
+      mechines: [],
     }
   },
   mounted() {
@@ -43,6 +56,8 @@ export default {
       this.name = application.name
       this.createTime = application.createTime
       this.updateTime = application.updateTime
+      this.nginxProxy = application.nginxProxy
+      this.mechines = application.mechines
     },
     async deleteApplication() {
       const { key } = this.$route.params

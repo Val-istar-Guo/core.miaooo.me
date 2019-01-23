@@ -16,6 +16,7 @@ router
 
   // NOTE: 获取全部配置的列表
   .get('/applications', async (ctx) => {
+    console.log('-----------------------------')
     const list = await getList()
     ctx.body = list.map(addApplicationUrl(ctx.host))
   })

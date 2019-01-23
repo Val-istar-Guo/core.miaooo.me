@@ -17,6 +17,7 @@ yarn-error.log
 dist
 views/index.*.html
 /database
+/domain.conf.d/*
 
 # Lock
 yarn.lock

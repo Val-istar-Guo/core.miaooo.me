@@ -17,34 +17,63 @@
         </div>
       </v-card-title>
 
-      <v-divider />
 
       <v-card-actions>
         <v-layout justify-end>
-          <v-btn flat color="blue-grey darken-4">修改</v-btn>
-          <v-btn flat color="error">删除</v-btn>
+          <v-btn flat color="error" @click="remove" :loading="deleting">删除</v-btn>
         </v-layout>
       </v-card-actions>
     </v-card>
   </div>
 </template>
 <script>
+import request from 'framework/request'
 import moment from 'moment'
+import vt from 'vue-types'
+import { setTimeout } from 'timers';
 
 
 export default {
   props: {
-    name: String,
-    appKey: String,
-    createTime: String,
-    updateTime: String,
+    name: vt.string.isRequired,
+    appKey: vt.string.isRequired,
+    createTime: vt.string.isRequired,
+    updateTime: vt.string.isRequired,
+    enableNginxProxy: vt.bool.def(false),
+  },
+
+  data() {
+    return {
+      deleting: false,
+      // enableNginxloading: false,
+    }
   },
 
   methods: {
     format(time) {
       console.log(time, new Date(time))
       return moment(time).format('YYYY-MM-DD HH:mm:ss')
+    },
+
+    async remove() {
+      this.deleting = true
+      await request
+        .delete(`/api/applications/${this.appKey}`)
+
+      this.deleting = false
+      this.$router.replace(`/applications`)
     }
+
+    // enableNginx() {
+    //   this.enableNginxloading = true
+    //   setTimeout(() => {
+    //     this.enableNginxloading = false
+    //   }, 2000)
+    //   // await request
+    //   //   .get('/api/mechines')
+
+    //   this.$emit('modified', {})
+    // }
   }
 }
 </script>

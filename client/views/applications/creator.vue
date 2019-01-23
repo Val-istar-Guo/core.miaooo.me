@@ -25,13 +25,11 @@
         </v-form>
       </v-card-text>
 
-      <!-- <v-divider></v-divider> -->
-
       <v-card-actions>
         <v-spacer></v-spacer>
         <div class="pb-2 pr-2">
-          <v-btn color="success" @click="create" :disabled="!valid">创建</v-btn>
-          <v-btn color="error" @click="$emit('cancle')">取消</v-btn>
+          <v-btn flat color="blue-grey darken-4" @click="$emit('cancle')">取消</v-btn>
+          <v-btn flat color="blue-grey darken-4" @click="create" :disabled="!valid">创建</v-btn>
         </div>
       </v-card-actions>
     </v-card>
