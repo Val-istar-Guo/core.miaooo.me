@@ -1,10 +1,16 @@
 import 'reflect-metadata'
 import { ConnectionOptions, createConnection, Connection } from 'typeorm'
-import env from 'detect-env'
+
 
 export default (options: ConnectionOptions): Function => {
   let connection: Connection | null = null
 
+  process.on(<any> 'rebuild', () => {
+    if (connection) {
+      console.log('close............................................')
+      connection.close()
+    }
+  })
 
   return async (ctx, next) => {
     if (connection && connection.isConnected) {
@@ -13,14 +19,6 @@ export default (options: ConnectionOptions): Function => {
     }
 
     connection = await createConnection(options)
-
-    try {
-      await next()
-    } catch (e) {
-      if (!env.is.prod) await connection.close()
-      throw e
-    }
-
-    if (!env.is.prod) await connection.close()
+    await next()
   }
 }

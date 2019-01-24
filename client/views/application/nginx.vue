@@ -194,7 +194,7 @@ export default {
         .send(nginxProxy)
 
       this.saving = false
-      this.$emit('updated', { nginxProxy: res.body })
+      this.$emit('updated', { section: 'nginx', nginxProxy: res.body })
     }
   }
 }

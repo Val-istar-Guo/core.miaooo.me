@@ -1,6 +1,6 @@
 import Router from 'koa-router'
 import { join } from 'path'
-import { getList, getInfo, create, update, remove } from '../../controller/mechine'
+import { getCount, getList, getInfo, create, update, remove, distribute } from '../../controller/mechine'
 import ServerError from '../../class/ServerError'
 import { ErrorMessage } from '../../constant';
 
@@ -16,9 +16,14 @@ router
   .prefix('/mechines')
 
   .get('/', async ctx => {
-    const list = await getList()
+    const list = await getList(ctx.query)
 
     ctx.body = list.map(addMechineUrl(ctx.host))
+  })
+
+  .get('/counter', async ctx => {
+    const count = await getCount(ctx.query)
+    ctx.body = { count }
   })
 
   .get('/:id', async ctx => {
@@ -27,6 +32,10 @@ router
 
   .post('/', async ctx => {
     ctx.body = await create(ctx.request.body)
+  })
+
+  .put('/distributor', async ctx => {
+    ctx.body = await distribute(ctx.request.body)
   })
 
   .put('/:id', async ctx => {

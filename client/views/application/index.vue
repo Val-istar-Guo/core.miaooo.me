@@ -13,6 +13,8 @@
 
         <mechines
           :mechines="mechines"
+          :app-key="$route.params.key"
+          @updated="fetchInfo"
         />
 
         <nginx

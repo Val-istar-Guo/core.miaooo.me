@@ -1,9 +1,7 @@
 import { getRepository } from 'typeorm'
-import { Application, NginxProxy } from '../entity'
+import { Application, NginxProxy, Mechine } from '../entity'
 import ServerError from '../class/ServerError'
 import { ErrorMessage } from '../constant'
-// import { create as createNginxProxy } from './nginx-proxy'
-// import { create as createMechine } from './mechine'
 
 
 /** 校验应用key值，自定义部分不能包含下划线，因为用于区分proxy.id与appkey */
@@ -71,6 +69,10 @@ export const update = async (key: string, options): Promise<Application> => {
 
   if (name) application.name = name
   if (application) application.services = services
+  if (mechines) {
+    const mehcineRepository = getRepository(Mechine)
+    application.mechines = await mehcineRepository.findByIds(mechines)
+  }
 
   await repository.save(application)
   return application
