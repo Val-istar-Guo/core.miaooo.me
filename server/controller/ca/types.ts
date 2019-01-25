@@ -9,7 +9,7 @@ export interface GetCAInfoFunc {
 
 /** 创建证书 */
 export interface CreateCACertificateFunc {
-  (certificate: Certificate): Promise<void>
+  (certificate: Certificate): Promise<Certificate>
 }
 
 export interface InjectNginxConfigFunc {

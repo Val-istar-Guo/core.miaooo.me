@@ -87,7 +87,6 @@ const genNginxConfig = (proxy: NginxProxy): NginxConfig => {
 
     if (proxy.redirectHttps) {
       // 重定向Https
-      console.log('aaaaaaaaaaaaaaaaa')
       const location = genRedirectHttpsLocation()
       config.http.location.push(location)
     } else if (config.upstream) {
@@ -113,10 +112,23 @@ const genNginxConfig = (proxy: NginxProxy): NginxConfig => {
 }
 
 /** 将代理信息生成nginx文件 */
-export const apply = async (proxy: NginxProxy): Promise<void> => {
-  console.log(proxy)
+export const apply = async (id: number): Promise<void> => {
+  const repository = getRepository(NginxProxy)
+  const proxy = await repository.findOne(id, {
+    join: {
+      alias: 'proxy',
+      leftJoinAndSelect: {
+        certificate: 'proxy.certificate',
+        application: 'proxy.application',
+        mechines: 'application.mechines',
+      },
+    },
+  })
+
+  if (!proxy) throw new ServerError(404, ErrorMessage.noNginxProxy)
+
+  console.log('apply proxy => ', proxy)
   const config = genNginxConfig(proxy)
-  console.log('config => ', config)
   const CONFIG_PATH = getNginxConfigPath(proxy)
   await fs.ensureDir(NGINX_CONF_DIR)
   await fs.writeFile(CONFIG_PATH, stringify(config))
@@ -126,7 +138,7 @@ export const apply = async (proxy: NginxProxy): Promise<void> => {
 /** 获取nginx代理列表 */
 export const getList = async (): Promise<NginxProxy[]> => {
   const repository = getRepository(NginxProxy)
-  return await repository.find()
+  return await repository.find({ relations: ['application'] })
 }
 
 /** 获取nginx代理配置信息 */
@@ -164,7 +176,7 @@ export const create = async (options): Promise<NginxProxy> => {
   if (typeof sslStapling === 'boolean') nginxProxy.sslStapling = sslStapling
 
   await repository.save(nginxProxy)
-  await apply(nginxProxy)
+  await apply(nginxProxy.id)
   return nginxProxy
 }
 
@@ -187,7 +199,7 @@ export const update = async (id: number, options): Promise<NginxProxy> => {
   if (typeof enableHttp === 'boolean') nginxProxy.enableHttp = enableHttp
   if (typeof enableHttps === 'boolean') nginxProxy.enableHttps = enableHttps
   if (typeof redirectHttps === 'boolean') nginxProxy.redirectHttps = redirectHttps
-  if (application) nginxProxy.application = application
+  if (application === null) nginxProxy.application = application
   if (certificate) nginxProxy.certificate = certificate
   if (sslCiphers) nginxProxy.sslCiphers = sslCiphers
   if (typeof sslPreferServerCiphers === 'boolean') nginxProxy.sslPreferServerCiphers = sslPreferServerCiphers
@@ -197,8 +209,7 @@ export const update = async (id: number, options): Promise<NginxProxy> => {
   if (typeof sslStapling === 'boolean') nginxProxy.sslStapling = sslStapling
 
   const np = await repository.save(nginxProxy)
-  console.log(np)
-  await apply(np)
+  await apply(np.id)
   return np
 }
 

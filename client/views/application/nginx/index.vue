@@ -1,6 +1,13 @@
 <template>
   <div>
     <div class="unable-select  body-1 grey--text text--darken-2 mb-3 mt-4">Nginx配置</div>
+    <certification-creator
+      :show="isShowCertificationCreator"
+      :domains="domains"
+      :nginx-proxy-id="nginxProxy.id"
+      @created="hideCertificationCreator"
+      @cancle="hideCertificationCreator"
+    />
     <v-card>
       <v-card-text>
         <v-form>
@@ -34,6 +41,22 @@
 
           <div v-if="enableHttps" class="mt-4 d-block">
             <v-label>https 配置</v-label>
+
+            <v-layout class="mt-3" align-center>
+              <v-select
+                disabled
+                label="CA证书"
+                placeholder="请创建CA证书"
+                :items="['LetsEn']"
+              />
+              <v-btn
+                round
+                flat
+                @click="showCertificationCreator"
+                :disabled="!domains.length || !nginxProxy.id"
+              >创建证书</v-btn>
+            </v-layout>
+
             <v-switch
               v-model="sslStapling"
               label="发送证书列表"
@@ -50,6 +73,7 @@
               multiple
               small-chips
             />
+
             <v-select
               v-model="sslProtocols"
               label="ssl协议"
@@ -93,9 +117,11 @@
 import moment from 'moment'
 import vt from 'vue-types'
 import request from 'framework/request'
+import certificationCreator from './certification-creator'
 
 
 export default {
+  components: { certificationCreator },
   props: {
     nginxProxy: vt.shape({
       id: vt.integer.isRequired,
@@ -103,6 +129,7 @@ export default {
       enableHttp: vt.bool.isRequired,
       enableHttps: vt.bool.isRequired,
       redirectHttps: vt.bool.isRequired,
+      certification: vt.object,
 
       sslCiphers: vt.arrayOf(vt.string).isRequired,
       sslPreferServerCiphers: vt.bool.isRequired,
@@ -125,6 +152,8 @@ export default {
       sslSessionCache: this.nginxProxy.sslSessionCache,
       sslSessionTimeout: this.nginxProxy.sslSessionTimeout,
       sslStapling: this.nginxProxy.sslStapling,
+
+      isShowCertificationCreator: false,
 
       search: {
         domain: '',
@@ -156,7 +185,8 @@ export default {
         'domains', 'enableHttp', 'enableHttps', 'redirectHttps', 'sslCiphers',
         'sslPreferServerCiphers', 'sslProtocols', 'sslSessionCache', 'sslSessionTimeout', 'sslStapling',
       ].some(prop => this[prop] !== this.nginxProxy[prop])
-    }
+    },
+
   },
 
   watch: {
@@ -195,6 +225,14 @@ export default {
 
       this.saving = false
       this.$emit('updated', { section: 'nginx', nginxProxy: res.body })
+    },
+
+    showCertificationCreator() {
+      this.isShowCertificationCreator = true
+    },
+
+    hideCertificationCreator() {
+      this.isShowCertificationCreator = false
     }
   }
 }

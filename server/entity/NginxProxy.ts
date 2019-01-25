@@ -56,7 +56,7 @@ class Proxy {
   @Column({ default: true })
   sslStapling!: boolean
 
-  @ManyToOne(() => Certificate, 'nginxProxy')
+  @ManyToOne(() => Certificate, 'nginxProxies')
   certificate!: Certificate
 
   @OneToOne(() => Application, 'nginxProxy')

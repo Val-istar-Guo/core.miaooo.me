@@ -1,7 +1,8 @@
-import { getRepository } from 'typeorm'
-import { Certificate } from '../entity'
+import { getRepository, getManager } from 'typeorm'
+import { Certificate, NginxProxy } from '../entity'
 import ServerError from '../class/ServerError'
 import { ErrorMessage } from '../constant'
+import { create as createCa } from './ca'
 
 
 const validateId = id => typeof id === 'number' && id > 0;
@@ -25,18 +26,41 @@ export const getInfo = async (id: string): Promise<Certificate> => {
 
 /** 创建证书 */
 export const create = async (options): Promise<Certificate> => {
-  const { name, domains, ca, crtKey, crt } = options
+  const { domains, ca } = options
+  return await getManager().transaction('SERIALIZABLE', async transactionalEntityManager => {
+    let certificate = new Certificate()
+    certificate.domains = domains
+    certificate.ca = ca
+    // certificate.crtKey = crtKey
+    // certificate.crt = crt
+    // certificate.lastRefreshTime = new Date()
+    // if (Array.isArray(nginxProxies)) {
+    //   const ids = nginxProxies.map(item => item.id)
+    //   // const proxies = await transactionalEntityManager.findByIds(NginxProxy, ids)
+    //   console.log('ids[0] => ', ids[0])
+    //   // certificate.nginxProxies = proxies
+    //   if (ids[0]) {
+    //     const proxy = await transactionalEntityManager.findOne(NginxProxy, ids[0])
+    //     console.log('proxy => ', proxy)
+    //     if (proxy) certificate.nginxProxies = [proxy]
+    //   }
+    // }
 
-  const repository = getRepository(Certificate)
-  const certificate = new Certificate()
-  certificate.name = name
-  certificate.domains = domains
-  certificate.ca = ca
-  certificate.crtKey = crtKey
-  certificate.crt = crt
+    certificate = await transactionalEntityManager.save(certificate)
+    const nginxProxyIds = options.nginxProxies.map(item => item.id)
+    console.log('nginxProxyIds => ', nginxProxyIds)
+    let nginxProxies = await transactionalEntityManager.findByIds(NginxProxy, nginxProxyIds)
+    console.log('nginxProxies => ', nginxProxies)
+    nginxProxies.forEach(nginxProxy => nginxProxy.certificate = certificate)
+    console.log('nginxProxies => ', nginxProxies)
+    await transactionalEntityManager.save(nginxProxies)
 
-  await repository.save(certificate)
-  return certificate
+    certificate = await createCa(certificate.id)
+    certificate = await transactionalEntityManager.save(certificate)
+
+
+    return certificate
+  })
 }
 
 /** 更新证书 */
@@ -48,7 +72,6 @@ export const update = async (id: string, options): Promise<Certificate> => {
   const certificate = await repository.findOne(id)
   if (!certificate) throw new ServerError(404, ErrorMessage.noCertificate)
 
-  if (name) certificate.name = name
   if (domains) certificate.domains = domains
   if (ca) certificate.ca = ca
   if (crtKey) certificate.crtKey = crtKey

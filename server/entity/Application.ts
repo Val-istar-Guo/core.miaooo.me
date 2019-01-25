@@ -28,7 +28,7 @@ class Application {
   @OneToMany(() => Service, 'application')
   services!: Service[]
 
-  @OneToOne(() => NginxProxy, 'application', { cascade: true })
+  @OneToOne(() => NginxProxy, 'application')
   @JoinColumn()
   nginxProxy!: NginxProxy
 }

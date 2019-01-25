@@ -9,6 +9,7 @@ export default (options: ConnectionOptions): Function => {
     if (connection) {
       console.log('close............................................')
       connection.close()
+      connection = null
     }
   })
 

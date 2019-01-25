@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import NginxProxy from "./NginxProxy";
 import { CATypes } from "../types";
 
@@ -8,26 +8,23 @@ class Certificate {
   @PrimaryGeneratedColumn()
   id!: number
 
-  @Column()
-  name!: string
-
   @Column('simple-array')
   domains!: string[]
 
-  @Column('datetime')
+  @Column({ type: 'datetime', nullable: true })
   lastRefreshTime!: Date
 
   @Column()
   ca!: CATypes
 
-  @Column()
+  @Column({ nullable: true })
   crtKey!: string
 
-  @Column()
+  @Column({ nullable: true })
   crt!: string
 
   @OneToMany(() => NginxProxy, 'certificate')
-  nginxProxy!: NginxProxy
+  nginxProxies!: NginxProxy[]
 }
 
 

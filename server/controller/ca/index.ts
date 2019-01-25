@@ -6,6 +6,7 @@ import { ErrorMessage } from '../../constant';
 import { NginxConfig } from '../../utils/nginx-config-parser';
 import { join } from 'path';
 import { CERTIFICATE_DIR } from '../../constant/Path';
+import { getRepository } from 'typeorm';
 
 
 /** 获取ca列表 */
@@ -19,9 +20,14 @@ export const getInfo = async (type: CATypes): Promise<CAInfo | undefined> => {
 }
 
 /** 创建证书 */
-export const create = async (certificate: Certificate): Promise<void> => {
-  if (certificate.ca === CATypes.LetsEncrypt) await LetsEncrypt.create(certificate)
+export const create = async (id: number): Promise<Certificate> => {
+  const repository = getRepository(Certificate)
+  const certificate = await repository.findOne(id, { relations: ['nginxProxies'] })
+  if (!certificate) throw new ServerError(400, ErrorMessage.noCertificate)
+  console.log('certificate => ', certificate)
 
+
+  if (certificate.ca === CATypes.LetsEncrypt) return await LetsEncrypt.create(certificate)
   throw new ServerError(400, ErrorMessage.caNotSupport)
 }
 

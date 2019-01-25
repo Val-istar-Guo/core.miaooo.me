@@ -129,14 +129,3 @@ export const distribute = async ({ application, type }): Promise<Mechine> => {
     return await transactionalEntityManager.save(mechine)
   })
 }
-
-// export const unbindApplication = async (id): Promise<void> => {{
-//   if(!validateId(id)) throw new ServerError(400, ErrorMessage.illegalId)
-
-//   const repository = getRepository(Mechine)
-//   const mechine = await repository.findOne(id)
-//   if (!mechine) throw new ServerError(400, ErrorMessage.noMechine)
-
-//   mechine.application = null
-//   await repository.save(mechine)
-// }}

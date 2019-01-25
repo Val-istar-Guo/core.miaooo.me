@@ -1,4 +1,4 @@
-import { getRepository } from 'typeorm'
+import { getRepository, getManager } from 'typeorm'
 import { Application, NginxProxy, Mechine } from '../entity'
 import ServerError from '../class/ServerError'
 import { ErrorMessage } from '../constant'
@@ -18,21 +18,22 @@ export const getList = async (): Promise<Application[]> => {
 /** 新建应用 */
 export const create = async (options): Promise<Application> => {
   const { key, name, nginxProxy } = options
-
   if (!validateKey(key)) throw new ServerError(400, ErrorMessage.illegalKey)
-  // BUG: nginxProxy exist
-  // BUG: service exist
 
-  const repository = getRepository(Application)
-  if (await repository.findOne(key)) throw new ServerError(400, ErrorMessage.createExistApplication)
+  return await getManager().transaction('SERIALIZABLE', async transactionalEntityManager => {
+    const exist = await transactionalEntityManager.findOne(Application, key)
+    if (exist) throw new ServerError(400, ErrorMessage.createExistApplication)
 
-  const application = new Application()
-  application.key = key
-  application.name = name
-  application.nginxProxy = new NginxProxy()
+    let nginxProxy = new NginxProxy()
+    nginxProxy = await transactionalEntityManager.save(nginxProxy)
 
-  await repository.save(application)
-  return application
+    const application = new Application()
+    application.key = key
+    application.name = name
+    application.nginxProxy = nginxProxy
+
+    return await transactionalEntityManager.save(application)
+  })
 }
 
 
@@ -41,7 +42,17 @@ export const getInfo = async (key: string): Promise<Application> => {
   if (!validateKey(key)) throw new ServerError(400, ErrorMessage.illegalKey)
 
   const repository = getRepository(Application)
-  const application = await repository.findOne(key, { relations: ['nginxProxy', 'mechines', 'services'] })
+  const application = await repository.findOne(key, {
+    join: {
+      alias: 'application',
+      leftJoinAndSelect: {
+        nginxProxy: 'application.nginxProxy',
+        mechines: 'application.mechines',
+        services: 'application.services',
+        certificate: 'nginxProxy.certificate',
+      },
+    },
+  })
 
   if (!application) throw new ServerError(404, ErrorMessage.noApplication)
   return application

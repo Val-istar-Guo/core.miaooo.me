@@ -19,10 +19,11 @@ const genPath = async (id: number) => {
   const DOMAIN_CSR: Path = join(ROOT, 'domain.csr');
   const DOMAIN_KEY: Path = join(ROOT, 'domain.key');
   const ACCOUNT_KEY: Path = join(ROOT, 'account.key');
+  const CRT: Path = join(ROOT, 'signed_chain.crt')
 
   await fs.ensureDir(CHALLENGES)
 
-  return { CHALLENGES, DOMAIN_CSR, DOMAIN_KEY, ACCOUNT_KEY }
+  return { CHALLENGES, DOMAIN_CSR, DOMAIN_KEY, ACCOUNT_KEY, CRT }
 }
 
 const exec = promisify(childProcess.exec)
@@ -86,13 +87,18 @@ export const getInfo: GetCAInfoFunc = async () => ({
 
 /** 创建证书 */
 export const create: CreateCACertificateFunc = async certificate => {
-  if (!certificate.nginxProxy) throw new ServerError(400, ErrorMessage.unableCreateLetsEncrypt.noProxy)
+  if (!certificate.nginxProxies.length) throw new ServerError(400, ErrorMessage.unableCreateLetsEncrypt.noProxy)
 
   const paths = await genPath(certificate.id)
 
   await genAccountKey(paths)
   await genDomainKey(paths)
   await genCSR(paths, certificate.domains)
+  certificate.crt = paths.CRT
+  certificate.crtKey = paths.DOMAIN_KEY
+  certificate.lastRefreshTime = new Date()
+
+  return certificate
 }
 
 export const injectNginx: InjectNginxConfigFunc = async (config, certificate) => {
