@@ -1,6 +1,6 @@
 import Router from 'koa-router'
 import { join } from 'path'
-import { getInfo, getList, create, update, remove } from '../../controller/certificate'
+import { renew, getInfo, getList, create, update, remove } from '../../controller/certificate'
 import ServerError from '../../class/ServerError'
 import { ErrorMessage } from '../../constant';
 
@@ -37,9 +37,18 @@ router
 
   // NOTE: 修改证书
   .put('/:id', async ctx => {
-    const { id } = ctx.request.body
-    if (id && id !== ctx.params.id) throw new ServerError(400, ErrorMessage.unableChangeId)
-    ctx.body = await update(ctx.params.id, ctx.request.body)
+    const id = parseInt(ctx.request.body.id)
+
+    if (ctx.request.body.id && ctx.request.body.id !== id) {
+      throw new ServerError(400, ErrorMessage.unableChangeId)
+    }
+
+    ctx.body = await update(id, ctx.request.body)
+  })
+
+  // NOTE: 更新证书
+  .put('/:id/renew', async ctx => {
+    ctx.body = await renew(parseInt(ctx.params.id))
   })
 
   // NOTE: 删除证书

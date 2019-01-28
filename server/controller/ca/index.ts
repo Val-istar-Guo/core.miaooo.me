@@ -1,4 +1,4 @@
-import * as LetsEncrypt from './LetsEncrypt'
+import * as LetsEncrypt from './lets-encrypt'
 import { CAInfo, CATypes } from '../../types'
 import { Certificate } from '../../entity';
 import ServerError from '../../class/ServerError';
@@ -24,16 +24,28 @@ export const create = async (id: number): Promise<Certificate> => {
   const repository = getRepository(Certificate)
   const certificate = await repository.findOne(id, { relations: ['nginxProxies'] })
   if (!certificate) throw new ServerError(400, ErrorMessage.noCertificate)
-  console.log('certificate => ', certificate)
-
 
   if (certificate.ca === CATypes.LetsEncrypt) return await LetsEncrypt.create(certificate)
   throw new ServerError(400, ErrorMessage.caNotSupport)
 }
 
-export const injectNginx = async (config: NginxConfig, certificate: Certificate): Promise<void> => {
-  if (certificate.ca === CATypes.LetsEncrypt) return await LetsEncrypt.injectNginx(config, certificate)
+/** 更新证书 */
+export const renew = async (id: number): Promise<Certificate> => {
+  const repository = getRepository(Certificate)
+  const certificate = await repository.findOne(id, { relations: ['nginxProxies'] })
+  if (!certificate) throw new ServerError(400, ErrorMessage.noCertificate)
 
+  if (certificate.ca === CATypes.LetsEncrypt) return await LetsEncrypt.renew(certificate)
+  throw new ServerError(400, ErrorMessage.caNotSupport)
+}
+
+/** 插入nginx配置的钩子 */
+export const injectNginx = async (config: NginxConfig, id: number): Promise<void> => {
+  const repository = getRepository(Certificate)
+  const certificate = await repository.findOne(id)
+  if (!certificate) throw new ServerError(400, ErrorMessage.noCertificate)
+
+  if (certificate.ca === CATypes.LetsEncrypt) return await LetsEncrypt.injectNginx(config, certificate)
   throw new ServerError(400, ErrorMessage.caNotSupport)
 }
 

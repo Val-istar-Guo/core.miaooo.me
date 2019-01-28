@@ -24,6 +24,7 @@
           />
 
           <v-switch
+            :disabled="nginxProxy.certificate && nginxProxy.certificate.ca === 'LetsEncrypt'"
             v-model="enableHttp"
             label="启用Http"
           />
@@ -43,18 +44,35 @@
             <v-label>https 配置</v-label>
 
             <v-layout class="mt-3" align-center>
-              <v-select
+              <v-text-field
                 disabled
                 label="CA证书"
                 placeholder="请创建CA证书"
-                :items="['LetsEn']"
+                :value="certificateName"
               />
               <v-btn
+                v-if="!nginxProxy.certificate"
                 round
                 flat
                 @click="showCertificationCreator"
                 :disabled="!domains.length || !nginxProxy.id"
               >创建证书</v-btn>
+              <v-btn
+                v-if="nginxProxy.certificate"
+                round
+                flat
+                :loading="certificateUpdating"
+                @click="renewCertificate"
+                :disabled="!domains.length || !nginxProxy.id"
+              >更新证书</v-btn>
+              <v-btn
+                v-if="nginxProxy.certificate"
+                round
+                flat
+                :loading="certificateUpdating"
+                @click="showCertificationCreator"
+                :disabled="!domains.length || !nginxProxy.id"
+              >删除证书</v-btn>
             </v-layout>
 
             <v-switch
@@ -171,10 +189,20 @@ export default {
       ],
       protocols: ['TLSv1', 'TLSv1.1', 'TLSv1.2'],
       saving: false,
+      certificateUpdating: false,
     }
   },
 
   computed: {
+    certificateName() {
+      const { nginxProxy} = this
+      const { certificate } = this.nginxProxy
+
+      if (!certificate) return ''
+
+      return `${certificate.ca} for ${certificate.domains.join(', ')}`
+    },
+
     recommendDomains() {
       if (!this.search.domain) return []
       return ['.com', '.cn', '.me'].map(item => `${this.search.domain}${item}`)
@@ -233,6 +261,17 @@ export default {
 
     hideCertificationCreator() {
       this.isShowCertificationCreator = false
+    },
+
+    async renewCertificate() {
+      this.certificateUpdating = true
+      try {
+        const res = await request
+          .put(`/api/certificates/${this.nginxProxy.certificate.id}/renew`)
+        this.$emit('update', { section: 'nginx', nginxProxy: res.nginxProxy })
+      } finally {
+        this.certificateUpdating = false
+      }
     }
   }
 }

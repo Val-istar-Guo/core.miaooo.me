@@ -1,5 +1,5 @@
 import fs from 'fs-extra'
-import { NginxProxy, Service } from '../entity'
+import { NginxProxy } from '../entity'
 import { getRepository } from 'typeorm';
 import ServerError from '../class/ServerError';
 import { ErrorMessage } from '../constant';
@@ -7,6 +7,7 @@ import { join } from 'path';
 import { NGINX_CONF_DIR } from '../constant/Path';
 import { stringify, NginxConfig, NginxRewriteMode, NginxFuzzyBoolean, NginxLocation, NginxSSLConfig, NginxUpstreamConfig } from '../utils/nginx-config-parser'
 import { Path } from '../types';
+import * as CA from './ca'
 
 
 const validateId = id => typeof id === 'number' && id > 0;
@@ -72,7 +73,7 @@ const genNginxUpstream = (proxy: NginxProxy): NginxUpstreamConfig => {
   return config
 }
 
-const genNginxConfig = (proxy: NginxProxy): NginxConfig => {
+const genNginxConfig = async (proxy: NginxProxy): Promise<NginxConfig> => {
   const config: NginxConfig = {}
 
   // 没有域名，不生成代理
@@ -106,6 +107,8 @@ const genNginxConfig = (proxy: NginxProxy): NginxConfig => {
       const location = genServiceLocation(config.upstream.name)
       config.https.location.push(location)
     }
+
+    await CA.injectNginx(config, proxy.certificate.id)
   }
 
   return config
@@ -113,6 +116,7 @@ const genNginxConfig = (proxy: NginxProxy): NginxConfig => {
 
 /** 将代理信息生成nginx文件 */
 export const apply = async (id: number): Promise<void> => {
+  console.log('[nginx proxy:生成nginx文件]')
   const repository = getRepository(NginxProxy)
   const proxy = await repository.findOne(id, {
     join: {
@@ -127,8 +131,7 @@ export const apply = async (id: number): Promise<void> => {
 
   if (!proxy) throw new ServerError(404, ErrorMessage.noNginxProxy)
 
-  console.log('apply proxy => ', proxy)
-  const config = genNginxConfig(proxy)
+  const config = await genNginxConfig(proxy)
   const CONFIG_PATH = getNginxConfigPath(proxy)
   await fs.ensureDir(NGINX_CONF_DIR)
   await fs.writeFile(CONFIG_PATH, stringify(config))

@@ -12,6 +12,10 @@ export interface CreateCACertificateFunc {
   (certificate: Certificate): Promise<Certificate>
 }
 
+export interface RenewCACertificateFunc {
+  (certificate: Certificate): Promise<Certificate>
+}
+
 export interface InjectNginxConfigFunc {
   (config: NginxConfig, certificate: Certificate): Promise<void>
 }

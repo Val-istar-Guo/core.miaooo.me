@@ -3,7 +3,7 @@ import { NginxSSLConfig } from './types'
 const sslStringify = (ssl: NginxSSLConfig) => `
 ssl_certificate ${ssl.certificate};
 ssl_certificate_key ${ssl.certificateKey};
-ssl_session_timeout ${ssl.protocols};
+ssl_session_timeout ${ssl.sessionTimeout};
 ssl_protocols ${ssl.protocols.join(' ')};
 ssl_ciphers ${ssl.ciphers.join(':')};
 ssl_session_cache ${ssl.sessionCache}

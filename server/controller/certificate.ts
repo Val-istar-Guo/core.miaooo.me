@@ -2,7 +2,7 @@ import { getRepository, getManager } from 'typeorm'
 import { Certificate, NginxProxy } from '../entity'
 import ServerError from '../class/ServerError'
 import { ErrorMessage } from '../constant'
-import { create as createCa } from './ca'
+import { create as createCa, renew as renewCa } from './ca'
 
 
 const validateId = id => typeof id === 'number' && id > 0;
@@ -31,28 +31,11 @@ export const create = async (options): Promise<Certificate> => {
     let certificate = new Certificate()
     certificate.domains = domains
     certificate.ca = ca
-    // certificate.crtKey = crtKey
-    // certificate.crt = crt
-    // certificate.lastRefreshTime = new Date()
-    // if (Array.isArray(nginxProxies)) {
-    //   const ids = nginxProxies.map(item => item.id)
-    //   // const proxies = await transactionalEntityManager.findByIds(NginxProxy, ids)
-    //   console.log('ids[0] => ', ids[0])
-    //   // certificate.nginxProxies = proxies
-    //   if (ids[0]) {
-    //     const proxy = await transactionalEntityManager.findOne(NginxProxy, ids[0])
-    //     console.log('proxy => ', proxy)
-    //     if (proxy) certificate.nginxProxies = [proxy]
-    //   }
-    // }
 
     certificate = await transactionalEntityManager.save(certificate)
     const nginxProxyIds = options.nginxProxies.map(item => item.id)
-    console.log('nginxProxyIds => ', nginxProxyIds)
     let nginxProxies = await transactionalEntityManager.findByIds(NginxProxy, nginxProxyIds)
-    console.log('nginxProxies => ', nginxProxies)
     nginxProxies.forEach(nginxProxy => nginxProxy.certificate = certificate)
-    console.log('nginxProxies => ', nginxProxies)
     await transactionalEntityManager.save(nginxProxies)
 
     certificate = await createCa(certificate.id)
@@ -64,7 +47,7 @@ export const create = async (options): Promise<Certificate> => {
 }
 
 /** 更新证书 */
-export const update = async (id: string, options): Promise<Certificate> => {
+export const update = async (id: number, options): Promise<Certificate> => {
   if (!validateId(id)) throw new ServerError(400, ErrorMessage.illegalId)
   const { name, domains, ca, crtKey } = options;
 
@@ -82,7 +65,7 @@ export const update = async (id: string, options): Promise<Certificate> => {
 }
 
 /** 删除证书 */
-export const remove = async (id: string): Promise<void> => {
+export const remove = async (id: number): Promise<void> => {
   if (!validateId(id)) throw new ServerError(400, ErrorMessage.illegalId)
 
   const repository = getRepository(Certificate)
@@ -90,5 +73,13 @@ export const remove = async (id: string): Promise<void> => {
   if (!certificate) throw new ServerError(404, ErrorMessage.noCertificate)
 
   await repository.delete(id)
+}
+
+/** 更新证书 */
+export const renew = async (id: number): Promise<Certificate> => {
+  return await getManager().transaction('SERIALIZABLE', async transactionalEntityManager => {
+    const certificate = await renewCa(id)
+    return await transactionalEntityManager.save(certificate)
+  })
 }
 
