@@ -66,6 +66,7 @@ const genDomainKey = async (paths): Promise<void> => {
 }
 
 const genCSR = async (paths, domains: string[]) => {
+  console.log('[Lets Encrypt:生成CSR]')
   const subjectAltName = domains.map(domain => `DNS:${domain}`).join(',')
   const { stdout, stderr } = await exec(`openssl req -new -sha256 -key ${paths.DOMAIN_KEY} -subj "/" -reqexts SAN -config <(cat ${paths.OPENSSL_CONFIG} <(printf "[SAN]\\nsubjectAltName=${subjectAltName}"))`, { shell: "/bin/bash" })
 
@@ -73,6 +74,7 @@ const genCSR = async (paths, domains: string[]) => {
 }
 
 const genCRT = async (paths) => {
+  console.log('[Lets Encrypt:生成CRT]')
   const { CHALLENGES, DOMAIN_CSR, ACCOUNT_KEY, ACME_TINY_PY } = paths
   const { stdout, stderr } = await exec(`python ${ACME_TINY_PY} --account-key ${ACCOUNT_KEY} --csr ${DOMAIN_CSR} --acme-dir ${CHALLENGES}`)
 

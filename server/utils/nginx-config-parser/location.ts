@@ -1,41 +1,35 @@
 import { NginxRewriteRule, NginxFuzzyBoolean, NginxHeader, NginxLocation } from './types'
+import { indent, blockIndent, mapIndent } from './indent'
+import { existOrEmptyArray } from './existOr';
 
 
-const aligsStringify = (path?: string): string => path ? `alias ${path};` : ''
-const tryFilesStringify = (rule?: string): string => rule ? `try_files ${rule}` : ''
-const rewriteStringify = (rule?: NginxRewriteRule): string => {
-  if (!rule) return ''
-
-  return `rewrite ${rule.from} ${rule.to} ${rule.mode};`
-}
-const sendFileStringify = (on?: NginxFuzzyBoolean): string => {
+const aligsStringify = indent((path: string) => `alias ${path};`)
+const tryFilesStringify = indent((rule: string) => `try_files ${rule};`)
+const rewriteStringify = indent((rule: NginxRewriteRule) => (
+  `rewrite ${rule.from} ${rule.to} ${rule.mode};`
+))
+const sendFileStringify = indent((on: NginxFuzzyBoolean) => {
   if (on === NginxFuzzyBoolean.Off) return 'sendfile off;'
   else if (on === NginxFuzzyBoolean.On) return 'sendfile on;'
-  else return ''
-}
-const proxySetHeaderStringify = (headers?: NginxHeader[]): string => {
-  if (!headers || !headers.length) return ''
+  return ''
+})
 
-  return headers
-    .map(header => `proxy_set_header ${header.key} ${header.value};`)
-    .join('\n')
-}
-const proxyPassStringify = (address?: string): string => address ? `proxy_pass ${address}` : ''
+const proxySetHeaderStringify = indent((headers: NginxHeader[]) => headers
+  .map(header => `proxy_set_header ${header.key} ${header.value};`))
 
-const locationStringify = (location: NginxLocation): string => `
-location ${location.path} {
-  ${aligsStringify(location.alias)}
-  ${tryFilesStringify(location.tryFiles)}
-  ${rewriteStringify(location.rewrite)}
-  ${sendFileStringify(location.sendFile)}
-  ${proxySetHeaderStringify(location.proxySetHeader)}
-  ${proxyPassStringify(location.proxyPass)}
-}
-`
-export const stringify = (location?: NginxLocation[]): string => {
-  if (!location) return ''
+const proxyPassStringify = indent((address?: string) => `proxy_pass ${address};`)
 
-  return location
-    .map(locationStringify)
-    .join('\n')
-}
+const locationStringify = blockIndent((location: NginxLocation) => [
+  `location ${location.path} {`,
+  aligsStringify(location.alias),
+  tryFilesStringify(location.tryFiles),
+  rewriteStringify(location.rewrite),
+  sendFileStringify(location.sendFile),
+  proxySetHeaderStringify(location.proxySetHeader),
+  proxyPassStringify(location.proxyPass),
+  '}',
+])
+
+export const stringify = existOrEmptyArray((location: NginxLocation[]) => {
+  return mapIndent(location, locationStringify)
+})
