@@ -96,5 +96,18 @@
     "vue-types": "^1.3.4",
     "vuetify": "^1.4.2",
     "vuex": "^3.0.1"
-  }
+  },
+  "description": "[![dependencies](https://img.shields.io/david/Val-istar-Guo/domain.miaooo.me.svg?style=flat-square)](https://www.npmjs.com/package/domain.miaooo.me)",
+  "version": "0.0.1",
+  "repository": "https://github.com/Val-istar-Guo/domain.miaooo.me.git",
+  "keywords": [
+    "core",
+    "management"
+  ],
+  "author": "Val-istar-Guo <val.istar.guo@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Val-istar-Guo/domain.miaooo.me/issues"
+  },
+  "homepage": "https://github.com/Val-istar-Guo/domain.miaooo.me#readme"
 }
