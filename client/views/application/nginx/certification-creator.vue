@@ -11,13 +11,14 @@
             v-model="ca"
             :items="caTypes"
             prepend-icon="security"
+            :loading="creating"
           />
         </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
         <v-btn flat @click="$emit('cancle')">取消</v-btn>
-        <v-btn flat @click="create">确定</v-btn>
+        <v-btn flat @click="create" :loading="creating">确定</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -40,19 +41,28 @@ export default {
     ]
 
     const ca = caTypes[0].value
-    return { caTypes, ca }
+    return {
+      caTypes,
+      ca,
+      creating: false,
+    }
   },
 
   methods: {
     async create() {
-      const certification = await request
-        .post('/api/certificates')
-        .send({ ca: this.ca })
-        .send({ domains: this.domains })
-        .send({ nginxProxies: [{ id: this.nginxProxyId }] })
-        .then(res => res.body)
+      this.creating = true
+      try {
+        const certification = await request
+          .post('/api/certificates')
+          .send({ ca: this.ca })
+          .send({ domains: this.domains })
+          .send({ nginxProxies: [{ id: this.nginxProxyId }] })
+          .then(res => res.body)
 
-      this.$emit('created', { certification })
+        this.$emit('created', { certification })
+      } finally {
+        this.creating = false
+      }
     }
   },
 }

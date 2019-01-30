@@ -68,11 +68,19 @@ export const update = async (id: number, options): Promise<Certificate> => {
 export const remove = async (id: number): Promise<void> => {
   if (!validateId(id)) throw new ServerError(400, ErrorMessage.illegalId)
 
-  const repository = getRepository(Certificate)
-  const certificate = await repository.findOne(id)
-  if (!certificate) throw new ServerError(404, ErrorMessage.noCertificate)
+  return await getManager().transaction('SERIALIZABLE', async transactionalEntityManager => {
+    const certificate = await transactionalEntityManager
+      .findOne(Certificate, id, { relations: ['nginxProxies'] })
+    if (!certificate) throw new ServerError(404, ErrorMessage.noCertificate)
 
-  await repository.delete(id)
+    const promisies = certificate.nginxProxies.map(proxy => {
+      proxy.certificate = null
+      return transactionalEntityManager.save(proxy)
+    })
+
+    await Promise.all(promisies)
+    await transactionalEntityManager.delete(Certificate, id)
+  })
 }
 
 /** 更新证书 */

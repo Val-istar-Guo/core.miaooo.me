@@ -63,15 +63,15 @@
                 flat
                 :loading="certificateUpdating"
                 @click="renewCertificate"
-                :disabled="!domains.length || !nginxProxy.id"
+                :disabled="!domains.length || !nginxProxy.id || certificateDeleting"
               >更新证书</v-btn>
               <v-btn
                 v-if="nginxProxy.certificate"
                 round
                 flat
-                :loading="certificateUpdating"
-                @click="showCertificationCreator"
-                :disabled="!domains.length || !nginxProxy.id"
+                :loading="certificateDeleting"
+                @click="deleteCertificate"
+                :disabled="!domains.length || !nginxProxy.id || certificateUpdating"
               >删除证书</v-btn>
             </v-layout>
 
@@ -190,6 +190,7 @@ export default {
       protocols: ['TLSv1', 'TLSv1.1', 'TLSv1.2'],
       saving: false,
       certificateUpdating: false,
+      certificateDeleting: false,
     }
   },
 
@@ -268,11 +269,21 @@ export default {
       try {
         const res = await request
           .put(`/api/certificates/${this.nginxProxy.certificate.id}/renew`)
-        this.$emit('update', { section: 'nginx', nginxProxy: res.nginxProxy })
+        this.$emit('updated', { section: 'nginx' })
       } finally {
         this.certificateUpdating = false
       }
-    }
+    },
+
+    async deleteCertificate() {
+      this.certificateDeleting = true
+      try {
+        await request.delete(`/api/certificates/${this.nginxProxy.certificate.id}`)
+        this.$emit('updated', { section: 'nginx' })
+      } finally {
+        this.certificateDeleting = false
+      }
+    },
   }
 }
 </script>

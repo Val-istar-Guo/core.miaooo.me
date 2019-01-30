@@ -53,7 +53,7 @@ router
 
   // NOTE: 删除证书
   .delete('/:id', async ctx => {
-    await remove(ctx.params.id)
+    await remove(parseInt(ctx.params.id))
     ctx.status = 200
   })
 

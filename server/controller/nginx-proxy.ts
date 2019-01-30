@@ -8,9 +8,21 @@ import { NGINX_CONF_DIR } from '../constant/Path';
 import { stringify, NginxConfig, NginxRewriteMode, NginxFuzzyBoolean, NginxLocation, NginxSSLConfig, NginxUpstreamConfig } from '../utils/nginx-config-parser'
 import { Path } from '../types';
 import * as CA from './ca'
+import * as childProcess from 'child_process'
+import { promisify } from 'util'
 
 
+const exec = promisify(childProcess.exec)
 const validateId = id => typeof id === 'number' && id > 0;
+
+/** 重载nginx配置 */
+export const reloadNginxConfig = async () => {
+  const { stdout, stderr } = await exec('sudo nginx -s reload')
+
+  if (stderr) console.log(stderr)
+  if (stdout) console.log(stdout)
+}
+
 const getNginxConfigPath = (config: NginxProxy): Path => {
   const filename = `${config.id}`
   return join(NGINX_CONF_DIR, filename)
@@ -47,8 +59,8 @@ const genRedirectHttpsLocation = (): NginxLocation => {
 
 const genNginxSSL = (proxy: NginxProxy): NginxSSLConfig => {
   const ssl: NginxSSLConfig = {
-    certificate: proxy.certificate.crt,
-    certificateKey: proxy.certificate.crtKey,
+    certificate: proxy.certificate ? proxy.certificate.crt : '',
+    certificateKey: proxy.certificate ? proxy.certificate.crtKey : '',
     sessionTimeout: proxy.sslSessionTimeout,
     protocols: proxy.sslProtocols,
     ciphers: proxy.sslCiphers,
@@ -135,6 +147,7 @@ export const apply = async (id: number): Promise<void> => {
   const CONFIG_PATH = getNginxConfigPath(proxy)
   await fs.ensureDir(NGINX_CONF_DIR)
   await fs.writeFile(CONFIG_PATH, stringify(config))
+  // await reloadNginxConfig()
 }
 
 
@@ -146,7 +159,8 @@ export const getList = async (): Promise<NginxProxy[]> => {
 
 /** 获取nginx代理配置信息 */
 export const getInfo = async (id: number): Promise<NginxProxy> => {
-  if (validateId(id)) throw new ServerError(400, ErrorMessage.illegalId)
+  if (!validateId(id)) throw new ServerError(400, ErrorMessage.illegalId)
+
   const repository = getRepository(NginxProxy)
   const nginxProxy = await repository.findOne(id)
 
@@ -218,7 +232,7 @@ export const update = async (id: number, options): Promise<NginxProxy> => {
 
 /** 删除nginx代理 */
 export const remove = async (id: number): Promise<void> => {
-  if (validateId(id)) throw new ServerError(400, ErrorMessage.illegalId)
+  if (!validateId(id)) throw new ServerError(400, ErrorMessage.illegalId)
 
   const repository = getRepository(NginxProxy)
   const nginxProxy = await repository.findOne(id)

@@ -57,7 +57,7 @@ class Proxy {
   sslStapling!: boolean
 
   @ManyToOne(() => Certificate, 'nginxProxies')
-  certificate!: Certificate
+  certificate!: Certificate | null
 
   @OneToOne(() => Application, 'nginxProxy')
   application!: Application
