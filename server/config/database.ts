@@ -1,6 +1,6 @@
 import { ConnectionOptions } from "typeorm";
 
-import { DATABASE } from '../constant/Path'
+import { DATABASE } from '../constant/path'
 import { Application, Service, NginxProxy, Certificate, Mechine } from '../entity'
 
 

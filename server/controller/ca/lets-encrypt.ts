@@ -6,7 +6,7 @@ import { promisify } from 'util'
 import { Path } from '../../types'
 import { GetCAInfoFunc, CreateCACertificateFunc, InjectNginxConfigFunc, RenewCACertificateFunc } from './types'
 import { Certificate } from '../../entity'
-import { CERTIFICATE_DIR } from '../../constant/Path'
+import { CERTIFICATE_DIR } from '../../constant/path'
 import ServerError from '../../class/ServerError';
 import { ErrorMessage } from '../../constant';
 import { apply as applyNginx } from '../nginx-proxy'

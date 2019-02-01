@@ -4,7 +4,7 @@ import { getRepository } from 'typeorm';
 import ServerError from '../class/ServerError';
 import { ErrorMessage } from '../constant';
 import { join } from 'path';
-import { NGINX_CONF_DIR } from '../constant/Path';
+import { NGINX_CONF_DIR } from '../constant/path';
 import { stringify, NginxConfig, NginxRewriteMode, NginxFuzzyBoolean, NginxLocation, NginxSSLConfig, NginxUpstreamConfig } from '../utils/nginx-config-parser'
 import { Path } from '../types';
 import * as CA from './ca'

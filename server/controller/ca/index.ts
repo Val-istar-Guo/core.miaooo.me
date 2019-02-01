@@ -5,7 +5,7 @@ import ServerError from '../../class/ServerError';
 import { ErrorMessage } from '../../constant';
 import { NginxConfig } from '../../utils/nginx-config-parser';
 import { join } from 'path';
-import { CERTIFICATE_DIR } from '../../constant/Path';
+import { CERTIFICATE_DIR } from '../../constant/path';
 import { getRepository } from 'typeorm';
 
 
