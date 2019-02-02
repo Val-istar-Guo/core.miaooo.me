@@ -95,7 +95,7 @@ export const getInfo: GetCAInfoFunc = async () => ({
 
 /** 创建证书 */
 export const create: CreateCACertificateFunc = async certificate => {
-  console.log('[Lets Encrypt:创建/更新证书]')
+  console.log('[Lets Encrypt:创建证书]')
   if (!certificate.nginxProxies.length) throw new ServerError(400, ErrorMessage.unableCreateLetsEncrypt.noProxy)
 
   const paths = await genPath(certificate.id)
@@ -113,7 +113,21 @@ export const create: CreateCACertificateFunc = async certificate => {
   return certificate
 }
 
-export const renew: RenewCACertificateFunc = create
+export const renew: RenewCACertificateFunc = async certificate => {
+  console.log('[Lets Encrypt:更新证书]')
+  if (!certificate.nginxProxies.length) throw new ServerError(400, ErrorMessage.unableCreateLetsEncrypt.noProxy)
+
+  const paths = await genPath(certificate.id)
+
+  await Promise.all(certificate.nginxProxies.map(proxy => applyNginx(proxy.id)))
+  await genCRT(paths)
+
+  certificate.crt = paths.CRT
+  certificate.crtKey = paths.DOMAIN_KEY
+  certificate.lastRefreshTime = new Date()
+
+  return certificate
+}
 
 export const injectNginx: InjectNginxConfigFunc = async (config, certificate) => {
   console.log('[Lets Encrypt:插入nginx配置]')
