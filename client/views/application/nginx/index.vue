@@ -30,7 +30,7 @@
           />
 
           <v-switch
-            v-if="enableHttp"
+            v-if="enableHttp && enableHttps && nginxProxy.certificate"
             v-model="redirectHttps"
             label="重定向Https"
           />
@@ -240,7 +240,7 @@ export default {
         domains: this.domains,
         enableHttp: this.enableHttp,
         enableHttps: this.enableHttps,
-        redirectHttps: this.redirectHttps,
+        redirectHttps: this.enableHttps && this.certificate ? this.redirectHttps : false,
         sslCiphers: this.sslCiphers,
         sslPreferServerCiphers: this.sslPreferServerCiphers,
         sslProtocols: this.sslProtocols,
