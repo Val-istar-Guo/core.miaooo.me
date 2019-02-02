@@ -3,6 +3,8 @@ port: 6010
 prod:
   host: miaooo.me
   path: /var/www/core.miaooo.me/prod
+  env:
+    database: /var/www/core.miaooo.me/database
 test:
   host: test.host
   path:

@@ -19,6 +19,7 @@ const formatEnvOfConfig = (name, config) => ({
     ...formatPropOfConfig('host', name, config),
     ...formatPropOfConfig('port', name, config),
     ...formatPropOfConfig('path', name, config),
+    ...formatPropOfConfig('env', name, config),
   },
 })
 
@@ -28,12 +29,14 @@ const sanitize = sa.keys({
     host: sa.string.required,
     port: sa.number,
     path: sa.string,
+    env: sa.object,
   },
   test: {
     user: sa.string.required,
     host: sa.string.required,
     port: sa.number,
     path: sa.string,
+    env: sa.object,
   },
 })
 
@@ -50,8 +53,14 @@ module.exports = {
       name: APP_NAME,
       script: './dist/server/bundle.js',
 
-      env_prod: { PORT: config.prod.port },
-      env_test: { PORT: config.prod.port }
+      env_prod: {
+        PORT: config.prod.port,
+        ...config.prod.env,
+      },
+      env_test: {
+        PORT: config.test.port,
+        ...config.test.env,
+      }
     },
   ],
 
