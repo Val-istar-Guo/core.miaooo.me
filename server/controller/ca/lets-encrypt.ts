@@ -34,7 +34,7 @@ const genPath = async (id: number) => {
   const DOMAIN_CSR: Path = join(ROOT, 'domain.csr')
   const DOMAIN_KEY: Path = join(ROOT, 'domain.key')
   const ACCOUNT_KEY: Path = join(ROOT, 'account.key')
-  const ACME_TINY_PY: Path = join(resolve('.'), 'acme-tiny', 'acme_tiny.py')
+  const ACME_TINY_PY: Path = join(resolve('.'), 'bin', 'acme_tiny.py')
   const CRT: Path = join(ROOT, 'signed_chain.crt')
   const OPENSSL_CONFIG: Path = await getOpensslConfigFilePath()
 
