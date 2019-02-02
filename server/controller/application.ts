@@ -2,6 +2,8 @@ import { getRepository, getManager } from 'typeorm'
 import { Application, NginxProxy, Mechine } from '../entity'
 import ServerError from '../class/ServerError'
 import { ErrorMessage } from '../constant'
+import { remove as removeNginxProxy } from './nginx-proxy'
+import { reset as resetMechine } from './mechine'
 
 
 /** 校验应用key值，自定义部分不能包含下划线，因为用于区分proxy.id与appkey */
@@ -67,6 +69,11 @@ export const remove = async (key: string): Promise<void> => {
   if (!application) throw new ServerError(404, ErrorMessage.noApplication)
 
   await repository.delete(key)
+  if (application.nginxProxy) await removeNginxProxy(application.nginxProxy.id)
+  if (application.mechines) {
+    const resetMechinesPromises = application.mechines.map(mechine => resetMechine(mechine.id))
+    await Promise.all(resetMechinesPromises)
+  }
 }
 
 /** 更新信息 */

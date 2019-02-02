@@ -78,6 +78,10 @@ export const update = async (id: number, options): Promise<Mechine> => {
   return await repository.save(mechine)
 }
 
+export const reset = async (id: number): Promise<Mechine> => {
+  return await update(id, { disabled: false, application: null,  })
+}
+
 export const create = async (options: []): Promise<Mechine[]> => {
   const repository = getRepository(Mechine)
   if (options.some(({ type, port }) => type === 'port' && !validatePort(port))) {
