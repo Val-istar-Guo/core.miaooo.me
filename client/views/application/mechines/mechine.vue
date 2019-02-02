@@ -67,6 +67,7 @@ export default {
       await request
         .put(`/api/mechines/${this.id}`)
         .send({ application: null })
+        .send({ disabled: true })
 
       this.$emit('unlocked')
     },
