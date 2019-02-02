@@ -5,7 +5,7 @@ import { NginxHttpConfig, NginxHttpsConfig, NginxConfig } from './types'
 import { indent, combineIndent, block } from './indent'
 
 
-const serverNameStringify = indent((names: string[]) => `server_name: ${names.join(' ')};`)
+const serverNameStringify = indent((names: string[]) => `server_name ${names.join(' ')};`)
 const portStringify = indent((port: number) => {
   if (port === 80) return `listen ${port};`
   else if (port === 443) return `listen 443 ssl;`
