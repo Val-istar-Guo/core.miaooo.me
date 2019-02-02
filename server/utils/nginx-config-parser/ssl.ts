@@ -6,7 +6,7 @@ const crtStringify = existOrEmptyString((crt: string) => `ssl_certificate ${crt}
 const crtKeyStringify = existOrEmptyString((key: string) => `ssl_certificate_key ${key};`)
 
 export const stringify = indent((ssl: NginxSSLConfig) => ([
-  crtKeyStringify(ssl.certificate),
+  crtStringify(ssl.certificate),
   crtKeyStringify(ssl.certificateKey),
   `ssl_session_timeout ${ssl.sessionTimeout};`,
   `ssl_protocols ${ssl.protocols.join(' ')};`,
