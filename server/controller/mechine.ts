@@ -79,7 +79,7 @@ export const update = async (id: number, options): Promise<Mechine> => {
 }
 
 export const reset = async (id: number): Promise<Mechine> => {
-  return await update(id, { disabled: false, application: null,  })
+  return await update(id, { disabled: true, application: null,  })
 }
 
 export const create = async (options: []): Promise<Mechine[]> => {
