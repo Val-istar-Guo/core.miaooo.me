@@ -5,6 +5,7 @@ prod:
   path: /var/www/core.miaooo.me/prod
   env:
     database: /var/www/core.miaooo.me/database
+    ROOT_DIR: /var/www/conf.d
 test:
   host: test.host
   path:
