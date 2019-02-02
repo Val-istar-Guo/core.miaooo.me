@@ -3,6 +3,7 @@ import { Certificate, NginxProxy } from '../entity'
 import ServerError from '../class/ServerError'
 import { ErrorMessage } from '../constant'
 import { create as createCa, renew as renewCa } from './ca'
+import { apply as applyNginx } from './nginx-proxy'
 
 
 const validateId = id => typeof id === 'number' && id > 0;
@@ -41,6 +42,7 @@ export const create = async (options): Promise<Certificate> => {
     certificate = await createCa(certificate.id)
     certificate = await transactionalEntityManager.save(certificate)
 
+    await applyNginx(certificate.id)
 
     return certificate
   })
@@ -60,6 +62,7 @@ export const update = async (id: number, options): Promise<Certificate> => {
   if (crtKey) certificate.crtKey = crtKey
 
   await repository.save(certificate)
+  await applyNginx(certificate.id)
 
   return certificate
 }
@@ -79,6 +82,7 @@ export const remove = async (id: number): Promise<void> => {
     })
 
     await Promise.all(promisies)
+    await applyNginx(certificate.id)
     await transactionalEntityManager.delete(Certificate, id)
   })
 }
@@ -87,6 +91,8 @@ export const remove = async (id: number): Promise<void> => {
 export const renew = async (id: number): Promise<Certificate> => {
   return await getManager().transaction('SERIALIZABLE', async transactionalEntityManager => {
     const certificate = await renewCa(id)
+    await applyNginx(certificate.id)
+
     return await transactionalEntityManager.save(certificate)
   })
 }
