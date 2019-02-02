@@ -17,7 +17,7 @@ const validateId = id => typeof id === 'number' && id > 0;
 
 /** 重载nginx配置 */
 export const reloadNginxConfig = async () => {
-  console.log('重载nginx配置')
+  console.log('[Nginx Proxy:重载nginx配置]')
   const { stdout, stderr } = await exec('sudo nginx -s reload')
 
   if (stderr) console.log(stderr)
