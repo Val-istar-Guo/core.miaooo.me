@@ -30,7 +30,7 @@ const genPath = async (id: number) => {
   const filename = `${id}`
   const ROOT: Path = join(CERTIFICATE_DIR, filename)
 
-  const CHALLENGES: Path = join(ROOT, 'challenges')
+  const CHALLENGES: Path = join(ROOT, 'challenges/')
   const DOMAIN_CSR: Path = join(ROOT, 'domain.csr')
   const DOMAIN_KEY: Path = join(ROOT, 'domain.key')
   const ACCOUNT_KEY: Path = join(ROOT, 'account.key')
