@@ -17,6 +17,7 @@ const validateId = id => typeof id === 'number' && id > 0;
 
 /** 重载nginx配置 */
 export const reloadNginxConfig = async () => {
+  console.log('重载nginx配置')
   const { stdout, stderr } = await exec('sudo nginx -s reload')
 
   if (stderr) console.log(stderr)
@@ -147,7 +148,7 @@ export const apply = async (id: number): Promise<void> => {
   const CONFIG_PATH = getNginxConfigPath(proxy)
   await fs.ensureDir(NGINX_CONF_DIR)
   await fs.writeFile(CONFIG_PATH, stringify(config))
-  // await reloadNginxConfig()
+  await reloadNginxConfig()
 }
 
 
