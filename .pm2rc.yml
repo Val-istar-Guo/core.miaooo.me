@@ -1,5 +1,5 @@
 user: jumper
-port: 6010
+port: 6000
 prod:
   host: miaooo.me
   path: /var/www/core.miaooo.me/prod
