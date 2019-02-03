@@ -51,7 +51,7 @@ const genRedirectHttpsLocation = (): NginxLocation => {
 
   location.rewrite = {
     from: '^/(.*)',
-    to: 'https://$server_name$1',
+    to: 'https://$host$request_uri',
     mode: NginxRewriteMode.Permanent,
   }
 
