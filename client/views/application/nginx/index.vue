@@ -240,7 +240,7 @@ export default {
         domains: this.domains,
         enableHttp: this.enableHttp,
         enableHttps: this.enableHttps,
-        redirectHttps: this.enableHttps && this.certificate ? this.redirectHttps : false,
+        redirectHttps: this.enableHttps && this.nginxProxy.certificate ? this.redirectHttps : false,
         sslCiphers: this.sslCiphers,
         sslPreferServerCiphers: this.sslPreferServerCiphers,
         sslProtocols: this.sslProtocols,
