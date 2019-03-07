@@ -98,7 +98,7 @@
     "vuex": "^3.0.1"
   },
   "description": "[![dependencies](https://img.shields.io/david/Val-istar-Guo/domain.miaooo.me.svg?style=flat-square)](https://www.npmjs.com/package/domain.miaooo.me)",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "repository": "https://github.com/Val-istar-Guo/domain.miaooo.me.git",
   "keywords": [
     "core",
