@@ -11,7 +11,7 @@ interface StandarFunc <T> {
 }
 
 export const combineIndent: IndentFunc = fn => config => {
-  if (!config) return []
+  if (config === undefined) return []
 
   let result = fn(config)
   if (typeof result === 'string') result = [result]
