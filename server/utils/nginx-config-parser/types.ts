@@ -63,6 +63,7 @@ export interface NginxHttpConfig {
 
 export interface NginxHttpsConfig {
   serviceName?: string[],
+  http2: boolean,
   location?: NginxLocation[],
   ssl?: NginxSSLConfig,
 }

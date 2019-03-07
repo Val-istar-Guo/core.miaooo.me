@@ -3,6 +3,7 @@ import { join, resolve } from 'path'
 import fs from 'fs-extra'
 import * as childProcess from 'child_process'
 import { promisify } from 'util'
+import env from 'detect-env'
 import { Path } from '../../types'
 import { GetCAInfoFunc, CreateCACertificateFunc, InjectNginxConfigFunc, RenewCACertificateFunc } from './types'
 import { Certificate } from '../../entity'
@@ -104,7 +105,7 @@ export const create: CreateCACertificateFunc = async certificate => {
   await genDomainKey(paths)
   await genCSR(paths, certificate.domains)
   await Promise.all(certificate.nginxProxies.map(proxy => applyNginx(proxy.id)))
-  await genCRT(paths)
+  if (env.is.prod) await genCRT(paths)
 
   certificate.crt = paths.CRT
   certificate.crtKey = paths.DOMAIN_KEY

@@ -1,4 +1,5 @@
 import fs from 'fs-extra'
+import env from 'detect-env'
 import { NginxProxy } from '../entity'
 import { getRepository } from 'typeorm';
 import ServerError from '../class/ServerError';
@@ -18,6 +19,9 @@ const validateId = id => typeof id === 'number' && id > 0;
 /** 重载nginx配置 */
 export const reloadNginxConfig = async () => {
   console.log('[Nginx Proxy:重载nginx配置]')
+
+  if (!env.is.prod) return
+
   const { stdout, stderr } = await exec('sudo nginx -s reload')
 
   if (stderr) console.log(stderr)
@@ -111,7 +115,7 @@ const genNginxConfig = async (proxy: NginxProxy): Promise<NginxConfig> => {
   }
 
   if (proxy.enableHttps && proxy.certificate) {
-    config.https = {}
+    config.https = { http2: proxy.http2 }
     config.https.serviceName = proxy.domains
     config.https.location = []
     config.https.ssl = genNginxSSL(proxy)
@@ -172,7 +176,7 @@ export const getInfo = async (id: number): Promise<NginxProxy> => {
 /** 创建nginx代理 */
 export const create = async (options): Promise<NginxProxy> => {
   const {
-    id, domains, enableHttp, enableHttps, application, certificate, redirectHttps,
+    id, domains, enableHttp, enableHttps, application, certificate, redirectHttps, http2,
     sslCiphers, sslPreferServerCiphers, sslProtocols, sslSessionCache,
     sslSessionTimeout, sslStapling,
   } = options
@@ -184,6 +188,7 @@ export const create = async (options): Promise<NginxProxy> => {
   if (typeof enableHttp === 'boolean') nginxProxy.enableHttp = enableHttp
   if (typeof enableHttps === 'boolean') nginxProxy.enableHttps = enableHttps
   if (typeof redirectHttps === 'boolean') nginxProxy.redirectHttps = redirectHttps
+  if (typeof http2) nginxProxy.http2 = http2
   if (application) nginxProxy.application = application
   if (certificate) nginxProxy.certificate = certificate
   if (sslCiphers) nginxProxy.sslCiphers = sslCiphers
@@ -203,7 +208,7 @@ export const update = async (id: number, options): Promise<NginxProxy> => {
   if (validateId(id)) throw new ServerError(400, ErrorMessage.illegalId)
 
   const {
-    domains, enableHttp, enableHttps, application, certificate, redirectHttps,
+    domains, enableHttp, enableHttps, application, certificate, redirectHttps, http2,
     sslCiphers, sslPreferServerCiphers, sslProtocols, sslSessionCache,
     sslSessionTimeout, sslStapling,
   } = options
@@ -217,6 +222,7 @@ export const update = async (id: number, options): Promise<NginxProxy> => {
   if (typeof enableHttp === 'boolean') nginxProxy.enableHttp = enableHttp
   if (typeof enableHttps === 'boolean') nginxProxy.enableHttps = enableHttps
   if (typeof redirectHttps === 'boolean') nginxProxy.redirectHttps = redirectHttps
+  if (typeof http2) nginxProxy.http2 = http2
   if (application === null) nginxProxy.application = application
   if (certificate) nginxProxy.certificate = certificate
   if (sslCiphers) nginxProxy.sslCiphers = sslCiphers

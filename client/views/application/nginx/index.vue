@@ -36,6 +36,12 @@
           />
 
           <v-switch
+            v-if="enableHttp && enableHttps && nginxProxy.certificate"
+            v-model="http2"
+            label="启用http2"
+          />
+
+          <v-switch
             v-model="enableHttps"
             label="启用Https"
           />
@@ -146,6 +152,7 @@ export default {
       domains: vt.arrayOf(vt.string).isRequired,
       enableHttp: vt.bool.isRequired,
       enableHttps: vt.bool.isRequired,
+      http2: vt.bool,
       redirectHttps: vt.bool.isRequired,
       certification: vt.object,
 
@@ -163,6 +170,7 @@ export default {
       domains: this.nginxProxy.domains,
       enableHttp: this.nginxProxy.enableHttp,
       enableHttps: this.nginxProxy.enableHttps,
+      http2: this.nginxProxy.http2,
       redirectHttps: this.nginxProxy.redirectHttps,
       sslCiphers: this.nginxProxy.sslCiphers,
       sslPreferServerCiphers: this.nginxProxy.sslPreferServerCiphers,
@@ -211,7 +219,7 @@ export default {
 
     modified() {
       return [
-        'domains', 'enableHttp', 'enableHttps', 'redirectHttps', 'sslCiphers',
+        'domains', 'enableHttp', 'enableHttps', 'redirectHttps', 'sslCiphers', 'http2',
         'sslPreferServerCiphers', 'sslProtocols', 'sslSessionCache', 'sslSessionTimeout', 'sslStapling',
       ].some(prop => this[prop] !== this.nginxProxy[prop])
     },
@@ -224,6 +232,7 @@ export default {
       this.enableHttp = this.nginxProxy.enableHttp
       this.enableHttps = this.nginxProxy.enableHttps
       this.redirectHttps = this.nginxProxy.redirectHttps
+      this.http2 = this.nginxProxy.http2
       this.sslCiphers = this.nginxProxy.sslCiphers
       this.sslPreferServerCiphers = this.nginxProxy.sslPreferServerCiphers
       this.sslProtocols = this.nginxProxy.sslProtocols
@@ -241,6 +250,7 @@ export default {
         enableHttp: this.enableHttp,
         enableHttps: this.enableHttps,
         redirectHttps: this.enableHttps && this.nginxProxy.certificate ? this.redirectHttps : false,
+        http2: this.enableHttps && this.nginxProxy.certificate ? this.http2 : false,
         sslCiphers: this.sslCiphers,
         sslPreferServerCiphers: this.sslPreferServerCiphers,
         sslProtocols: this.sslProtocols,

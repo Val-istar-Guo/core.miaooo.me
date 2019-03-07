@@ -6,15 +6,14 @@ import { indent, combineIndent, block } from './indent'
 
 
 const serverNameStringify = indent((names: string[]) => `server_name ${names.join(' ')};`)
-const portStringify = indent((port: number) => {
-  if (port === 80) return `listen ${port};`
-  else if (port === 443) return `listen 443 ssl;`
-  return `listen ${port}`
+const httpsPortStringify = indent((http2: boolean = false) => {
+  if (http2) return `listen 443 ssl http2;`
+  else return `listen 443 ssl;`
 })
 
 const httpStringify = block(combineIndent((config: NginxHttpConfig) => [
   'server {',
-  portStringify(80),
+  '  listen 80;',
   serverNameStringify(config.serviceName),
   locationStringify(config.location),
   '}',
@@ -22,7 +21,7 @@ const httpStringify = block(combineIndent((config: NginxHttpConfig) => [
 
 const httpsStringify = block(combineIndent((config: NginxHttpsConfig) => [
   `server {`,
-  portStringify(443),
+  httpsPortStringify(config.http2),
   serverNameStringify(config.serviceName),
   sslStringify(config.ssl),
   locationStringify(config.location),

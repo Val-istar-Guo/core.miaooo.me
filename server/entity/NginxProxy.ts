@@ -21,6 +21,9 @@ class Proxy {
   @Column({ default: false })
   enableHttps!: boolean
 
+  @Column({ default: false })
+  http2!: boolean
+
   @Column({ default: '5m' })
   sslSessionTimeout!: string
 
