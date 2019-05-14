@@ -1,4 +1,8 @@
-repository: https://github.com/Val-istar-guo/web-template.git
-version: 0.11.1
 mili:
-  version: 1.10.0
+  version: 2.1.1
+template:
+  repository: https://github.com/Val-istar-guo/web-template.git
+  version: 1.2.0
+interaction: 97d170e1550eee4afc0af065b78cda302a97674c
+answers:
+
